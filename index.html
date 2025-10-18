@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>ابزار قهوه مجید | ریسپانسیو و مدرن</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<header>
+    <div class="header-container">
+        <h1>ابزار قهوه مجید</h1>
+        <div id="live-clock"></div>
+        <svg id="theme-toggler" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor: pointer;">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </div>
+</header>
+
+<main>
+    <div id="main-menu">
+        <div class="container">
+            <div id="roast-card" class="card">
+                <img src="image/chilled_7924438.png" alt="محاسبه رست">
+                <h3>محاسبه رُست</h3>
+            </div>
+            <div id="cafe-card" class="card">
+                <img src="image/coffee_14861810.png" alt="درآمد کافه">
+                <h3>درآمد کافه</h3>
+            </div>
+            <div id="mix-card" class="card">
+                <img src="image/harvest_13888666.png" alt="میکس دانه">
+                <h3>میکس دانه</h3>
+            </div>
+            <div id="stopwatch-card" class="card">
+                <img src="image/stopwatch_6929413.png" alt="کرنومتر">
+                <h3>کرنومتر</h3>
+            </div>
+            <div id="price-list-card" class="card">
+                <img src="image/sack_7924545.png" alt="لیست قیمت">
+                <h3>لیست قیمت</h3>
+            </div>
+            <div id="bakwash-card" class="card">
+                <img src="image/cup_10205429.png" alt="بک واش  ">
+                <h3> بک واش </h3>
+            </div>
+        </div>
+    </div>
+
+    <div id="calculator-section" style="display: none;">
+        <div class="calculator-container">
+            <h2>ابزار محاسبه رُست قهوه</h2>
+            <button class="calc-button back-button">بازگشت به منو</button>
+            <div class="input-group">
+                <label for="greenPrice">قیمت دانه سبز خریداری شده (تومان/کیلوگرم)</label>
+                <input type="number" id="greenPrice" value="500000" placeholder="مثال: 500000">
+            </div>
+            <div class="input-group">
+                <label for="roastWage">اجرت رُست (تومان/کیلوگرم)</label>
+                <input type="number" id="roastWage" value="20000" placeholder="مثال: 20000">
+            </div>
+            <div class="input-group">
+                <label for="batchInput">مقدار دانه سبزی (گرم)</label>
+                <input type="number" id="batchInput" value="1000" placeholder="مثال: 1000">
+            </div>
+            <div class="input-group">
+                <label for="batchOutput">مقدار خروجی دانه رُست شده (گرم)</label>
+                <input type="number" id="batchOutput" value="850" placeholder="مثال: 850">
+            </div>
+            <div class="input-group">
+                <label for="totalGreen">کل دانه سبز روز (کیلوگرم)</label>
+                <input type="number" id="totalGreen" value="15" placeholder="مثال: 15">
+            </div>
+            <button id="calculate-roast-btn" class="calc-button">محاسبه</button>
+            <div class="result" id="results">
+                <p>نتایج پس از محاسبه نمایش داده خواهند شد.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="cafe-section" style="display: none;">
+        <div class="calculator-container" style="max-width: 700px;">
+            <h2>ابزار محاسبه درآمد کافه (روزانه / ماهانه)</h2>
+            <button class="calc-button back-button">بازگشت به منو</button>
+            <div class="cafe-grid two-cols">
+                <div class="input-group"><label for="costPerKG">قیمت خرید میکس (تومان/کیلوگرم) *</label><input type="number" id="costPerKG" value="600000"></div>
+                <div class="input-group"><label for="sellPriceKG">قیمت فروش میکس (تومان)</label><input type="number" id="sellPriceKG" value="850000"></div>
+                <div class="input-group"><label for="costSingleShot">قیمت شات تک (تومان) *</label><input type="number" id="costSingleShot" value="45000"></div>
+                <div class="input-group"><label for="costDoubleShot">قیمت شات دبل (تومان)</label><input type="number" id="costDoubleShot" value="60000"></div>
+            </div>
+            <h3>مصرف و هزینه‌های جانبی</h3>
+            <div class="cafe-grid two-cols">
+                <div class="input-group"><label for="gramSingle">گرم مصرفی شات تک</label><input type="number" id="gramSingle" value="18"></div>
+                <div class="input-group"><label for="gramDouble">گرم مصرفی شات دبل</label><input type="number" id="gramDouble" value="20"></div>
+                <div class="input-group"><label for="otherCostPerShot">هزینه جانبی هر شات</label><input type="number" id="otherCostPerShot" value="5000"></div>
+            </div>
+            <h3>تعداد فروش روزانه</h3>
+            <div class="cafe-grid two-cols">
+                <div class="input-group"><label for="salesSingle">تعداد فروش تک</label><input type="number" id="salesSingle" value="100"></div>
+                <div class="input-group"><label for="salesDouble">تعداد فروش دبل</label><input type="number" id="salesDouble" value="50"></div>
+                <div class="input-group"><label for="salesMixKG">فروش قهوه (کیلوگرم)</label><input type="number" id="salesMixKG" value="1"></div>
+            </div>
+            <button id="calculate-cafe-btn" class="calc-button">محاسبه</button>
+            <div class="result" id="cafe-results">
+                <p>نتایج پس از محاسبه نمایش داده خواهند شد.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="stopwatch-section" style="display: none;">
+        <div class="calculator-container">
+            <h2>کرنومتر دو مرحله‌ای</h2>
+            <button class="calc-button back-button">بازگشت به منو</button>
+            <div class="stopwatch-inputs">
+                <div class="input-group">
+                    <input type="number" id="stage1-minutes" value="15" min="0" max="59" placeholder="دقیقه ۱">
+                </div>
+                <div class="input-group">
+                    <input type="number" id="stage1-seconds" value="30" min="0" max="59" placeholder="ثانیه ۱">
+                </div>
+            </div>
+             <div class="stopwatch-inputs">
+                <div class="input-group">
+                    <input type="number" id="stage2-minutes" value="0" min="0" max="59" placeholder="دقیقه ۲">
+                </div>
+                <div class="input-group">
+                    <input type="number" id="stage2-seconds" value="30" min="0" max="59" placeholder="ثانیه ۲">
+                </div>
+            </div>
+            <p id="stage-indicator" style="display: none; height: 1.5em;"></p>
+            <div class="stopwatch-display">15:30</div>
+            <div class="stopwatch-controls">
+                <button class="calc-button" id="start-pause-btn">شروع</button>
+                <button class="calc-button" id="reset-btn">ریست</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bean Mix Section (Final Correct Implementation) -->
+    <div id="mix-section" style="display: none;">
+        <div class="calculator-container" style="max-width: 800px;">
+            <h2>ابزار محاسبه قیمت میکس دانه</h2>
+            <button class="calc-button back-button">بازگشت به منو</button>
+            <div id="bean-rows-container">
+                <!-- Bean rows will be dynamically added here by JavaScript -->
+            </div>
+            <hr>
+            <div class="mix-controls">
+                <button id="add-bean-btn" class="calc-button" style="background: var(--accent-color); width: auto; padding: 0.5rem 1.5rem;">+ افزودن دانه</button>
+                <div class="total-percentage-display">
+                    <strong>مجموع درصد: <span id="total-percentage">0</span>%</strong>
+                </div>
+            </div>
+            <hr>
+            <button id="calculate-mix-btn" class="calc-button">محاسبه قیمت</button>
+            <div class="result" id="mix-results">
+                <p>برای محاسبه، ابتدا دانه‌های خود را با درصد و وزن ترکیبشان وارد کنید.</p>
+            </div>
+        </div>
+    </div>
+        <!-- 🔹 بخش کرنومتر بک‌واش دستگاه اسپرسو -->
+    <div id="bakwash-section" style="display: none;">
+    <div class="calculator-container">
+        <h2>کرنومتر بک‌واش دستگاه اسپرسو ☕</h2>
+        <button class="calc-button back-button">بازگشت به منو</button>
+
+        <div class="stopwatch-display" id="backwash-display">00:00</div>
+
+        <div class="stopwatch-controls">
+            <button class="calc-button" id="backwash-start10">🔸 مرحله ۱۰ ثانیه‌ای</button>
+            <button class="calc-button" id="backwash-start5">🟢 مرحله ۵ ثانیه‌ای</button>
+        </div>
+
+        <p id="backwash-status">وضعیت: آماده</p>
+
+    </div>
+
+    <audio id="backwash-beep">
+        <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg">
+    </audio>
+</div>
+
+    <!-- Price List Section (Redesigned) -->
+    <div id="price-list-section" style="display: none;">
+        <div class="calculator-container" style="max-width: 900px;">
+            <h2>ایجاد لیست قیمت برای تصویر</h2>
+            <button class="calc-button back-button">بازگشت به منو</button>
+
+            <h3>اطلاعات سربرگ (برای تصویر خروجی)</h3>
+            <div class="price-list-header">
+                <div class="input-group"><input type="text" id="brand-name" placeholder="نام تجاری (مثال: کافه مجید)"></div>
+                <div class="input-group"><input type="text" id="social-id" placeholder="آیدی اینستاگرام (مثال: @majid_coffee)"></div>
+            </div>
+            <hr>
+
+            <h3>لیست قیمت دانه‌های قهوه</h3>
+            <div id="coffee-list-container" class="item-list-container">
+                <!-- Coffee rows will be added here by JS -->
+            </div>
+            <button id="add-coffee-row-btn" class="calc-button add-row-btn">+ افزودن ردیف قهوه</button>
+            <hr>
+
+            <h3>لیست قیمت محصولات پودری</h3>
+            <div id="powder-list-container" class="item-list-container">
+                <!-- Powder rows will be added here by JS -->
+            </div>
+            <button id="add-powder-row-btn" class="calc-button add-row-btn">+ افزودن ردیف پودر</button>
+            <hr>
+
+            <button id="generate-image-btn" class="calc-button">ایجاد عکس لیست قیمت</button>
+
+            <!-- Hidden template for generating the image -->
+            <div id="image-output-template" style="display: none;">
+                <div class="image-header">
+                    <h1 id="image-brand-name"></h1>
+                    <p id="image-social-id"></p>
+                </div>
+                <div class="image-content">
+                    <div id="image-coffee-list"></div>
+                    <div id="image-powder-list"></div>
+                </div>
+                <div class="image-footer">
+                    <p>تهیه شده با ابزار قهوه مجید</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+  © ۱۴۰۴ ابزار قهوه مجید — تمامی حقوق محفوظ است.
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
