@@ -603,8 +603,10 @@ if (sections.bakwash) {
     // ####################################
     if (sections.priceList) {
         const coffeeListContainer = sections.priceList.querySelector('#coffee-list-container');
+        const powderListContainer = sections.priceList.querySelector('#powder-list-container');
         const generateImageBtn = sections.priceList.querySelector('#generate-image-btn');
         const coffeeSearchInput = sections.priceList.querySelector('#coffee-search');
+        const powderSearchInput = sections.priceList.querySelector('#powder-search');
 
         // Modal Elements
         const roastModal = document.getElementById('roast-modal');
@@ -623,6 +625,9 @@ if (sections.bakwash) {
             "پاناما","کاستاریکا","اندونزی عربیکا","جاوا عربیکا","بوربون",
             "تیپیکا","اندونزی روبوستا","برزیل روبوستا","هند روبوستا",
             " 70/30 میکس عربیکا","50/50 میکس","100 عربیکا ","100 ربوستا ","70/30 میکس ربوستا"
+        ];
+        const powderTypes = [
+            "شکلات داغ","شکلات سفید","چای ماسالا","ثعلب","کاپوچینو","کافی میکس"
         ];
         const roastTypes = ["مدیوم", "شکلاتی", "دارک"];
 
@@ -718,6 +723,27 @@ if (sections.bakwash) {
         }
 
         /**
+         * Creates a new powder row in the price list.
+         */
+        function createPowderRow(powderType) {
+            const row = document.createElement('div');
+            row.className = 'price-list-dynamic-row';
+            const powderName = document.createElement('span');
+            powderName.textContent = powderType;
+            const priceDisplay = document.createElement('span');
+            priceDisplay.className = 'price-display';
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = 'حذف';
+            removeBtn.className = 'calc-button remove-row-btn';
+            removeBtn.onclick = () => row.remove();
+            row.append(powderName, priceDisplay, removeBtn);
+            powderListContainer.appendChild(row);
+
+            showModal(row, powderType);
+        }
+
+
+        /**
          * Generates an image of the price list.
          */
         function generateImage() {
@@ -732,17 +758,17 @@ if (sections.bakwash) {
             const imagePowderList = imageTemplate.querySelector('#image-powder-list');
 
             imageCoffeeList.innerHTML = '<h3>دانه‌های قهوه</h3>';
-            imagePowderList.innerHTML = ''; // Remove powder section
+            imagePowderList.innerHTML = '<h3>محصولات پودری</h3>';
 
-            let hasCoffee = false;
+            let hasContent = false;
             coffeeListContainer.querySelectorAll('.price-list-dynamic-row').forEach(row => {
                 const coffee = row.querySelector('span').textContent;
                 const roast = row.dataset.roastType;
                 const price = parseFloat(row.dataset.purchasePrice);
                 const percent = parseFloat(row.dataset.profitPercent);
 
-                if (coffee && roast && price && percent) {
-                    hasCoffee = true;
+                if (coffee && roast && !isNaN(price) && !isNaN(percent)) {
+                    hasContent = true;
                     const finalPrice = price * (1 + (percent / 100));
                     const item = document.createElement('div');
                     item.className = 'image-item-row';
@@ -750,9 +776,28 @@ if (sections.bakwash) {
                     imageCoffeeList.appendChild(item);
                 }
             });
-            if (!hasCoffee) imageCoffeeList.innerHTML = '';
+            if (imageCoffeeList.children.length <= 1) imageCoffeeList.innerHTML = '';
 
-            if (!hasCoffee) {
+
+            powderListContainer.querySelectorAll('.price-list-dynamic-row').forEach(row => {
+                const powder = row.querySelector('span').textContent;
+                const price = parseFloat(row.dataset.purchasePrice);
+                const percent = parseFloat(row.dataset.profitPercent);
+
+                if (powder && !isNaN(price) && !isNaN(percent)) {
+                    hasContent = true;
+                    const finalPrice = price * (1 + (percent / 100));
+                    const item = document.createElement('div');
+                    item.className = 'image-item-row';
+                    item.innerHTML = `<span class="item-name">${powder}</span><span class="item-price">${formatCurrency(finalPrice)} تومان</span>`;
+                    imagePowderList.appendChild(item);
+                }
+            });
+
+            if (imagePowderList.children.length <= 1) imagePowderList.innerHTML = '';
+
+
+            if (!hasContent) {
                 alert('لطفا حداقل یک مورد را برای ایجاد تصویر وارد کنید.');
                 return;
             }
@@ -797,6 +842,33 @@ if (sections.bakwash) {
                     newSuggestionBox.appendChild(suggestionItem);
                 });
                 coffeeSearchInput.parentNode.appendChild(newSuggestionBox);
+            }
+        });
+
+        powderSearchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const suggestions = powderTypes.filter(type => type.toLowerCase().startsWith(searchTerm));
+
+            const suggestionBox = document.getElementById('autocomplete-suggestions-powder');
+            if (suggestionBox) {
+                suggestionBox.remove();
+            }
+
+            if (searchTerm.length > 0 && suggestions.length > 0) {
+                const newSuggestionBox = document.createElement('div');
+                newSuggestionBox.id = 'autocomplete-suggestions-powder';
+                newSuggestionBox.className = 'autocomplete-suggestions';
+                suggestions.forEach(suggestion => {
+                    const suggestionItem = document.createElement('div');
+                    suggestionItem.textContent = suggestion;
+                    suggestionItem.addEventListener('click', () => {
+                        createPowderRow(suggestion);
+                        powderSearchInput.value = '';
+                        newSuggestionBox.remove();
+                    });
+                    newSuggestionBox.appendChild(suggestionItem);
+                });
+                powderSearchInput.parentNode.appendChild(newSuggestionBox);
             }
         });
 

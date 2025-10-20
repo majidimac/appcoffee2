@@ -396,6 +396,27 @@ select option {
     background-color: #f0f0f0;
 }
 
+.autocomplete-suggestions {
+    position: absolute;
+    border: 1px solid #999;
+    border-top: none;
+    max-height: 150px;
+    overflow-y: auto;
+    background-color: #fff;
+    color: #000;
+    z-index: 999;
+    width: calc(100% - 2rem);
+}
+
+.autocomplete-suggestions div {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.autocomplete-suggestions div:hover {
+    background-color: #f0f0f0;
+}
+
 /* =====================
    ریسپانسیو موبایل
 ===================== */
