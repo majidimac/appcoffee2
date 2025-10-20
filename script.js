@@ -34,6 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // ####################################
     // Clock Logic
     // ####################################
+    /**
+     * Updates the live clock element with the current time.
+     */
     function updateClock() {
         if (!clockElement) return;
         const now = new Date();
@@ -46,15 +49,31 @@ document.addEventListener('DOMContentLoaded', () => {
     // ####################################
     // Theme Switcher Logic
     // ####################################
+    /**
+     * Retrieves the stored theme from local storage.
+     * @returns {string|null} The stored theme or null if not set.
+     */
     const getStoredTheme = () => localStorage.getItem('theme');
+    /**
+     * Stores the selected theme in local storage.
+     * @param {string} theme - The theme to store.
+     */
     const setStoredTheme = theme => localStorage.setItem('theme', theme);
 
+    /**
+     * Determines the preferred theme based on local storage or system settings.
+     * @returns {string} The preferred theme ('dark' or 'light').
+     */
     const getPreferredTheme = () => {
         const storedTheme = getStoredTheme();
         if (storedTheme) return storedTheme;
         return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     };
 
+    /**
+     * Applies the selected theme to the document.
+     * @param {string} theme - The theme to apply ('dark' or 'light').
+     */
     const setTheme = theme => {
         const isDark = theme === 'dark';
         document.documentElement.setAttribute('data-theme', theme);
@@ -76,6 +95,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // ####################################
     // Navigation Logic
     // ####################################
+    /**
+     * Shows a specific section and hides all others.
+     * @param {string} sectionId - The ID of the section to show.
+     */
     function showSection(sectionId) {
         Object.values(sections).forEach(section => {
             if(section) section.style.display = 'none';
@@ -98,11 +121,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // ####################################
     // Helper Functions
     // ####################################
+    /**
+     * Formats a number as a currency string.
+     * @param {number} number - The number to format.
+     * @returns {string} The formatted currency string.
+     */
     function formatCurrency(number) {
         if (isNaN(number)) return '0';
         return number.toLocaleString('fa-IR', { maximumFractionDigits: 0 });
     }
 
+    /**
+     * Gets the numeric value of an input field.
+     * @param {string} elementId - The ID of the input element.
+     * @param {*} [defaultValue=0] - The default value to return if the input is invalid.
+     * @returns {number} The numeric value of the input.
+     */
     function getInputValue(elementId, defaultValue = 0) {
         const input = document.getElementById(elementId);
         if (!input) return defaultValue;
@@ -125,20 +159,32 @@ if (sections.bakwash) {
 
     let backwashTimer = null;
 
-    // فرمت زمان برای نمایش
+    /**
+     * Formats a number of seconds into a mm:ss time string.
+     * @param {number} sec - The number of seconds.
+     * @returns {string} The formatted time string.
+     */
     function formatTime(sec) {
         const m = String(Math.floor(sec / 60)).padStart(2, '0');
         const s = String(sec % 60).padStart(2, '0');
         return `${m}:${s}`;
     }
 
-    // پخش صدای بوق
+    /**
+     * Plays the backwash beep sound.
+     */
     function playBackwashBeep() {
         backwashBeep.currentTime = 0;
         backwashBeep.play().catch(() => {});
     }
 
-    // اجرای چرخه روشن/خاموش
+    /**
+     * Runs a backwash cycle with specified on/off times and rounds.
+     * @param {number} onTime - The time in seconds for the "on" phase.
+     * @param {number} offTime - The time in seconds for the "off" phase.
+     * @param {number} totalRounds - The total number of rounds.
+     * @param {string} label - The label for the cycle.
+     */
     function runBackwashCycle(onTime, offTime, totalRounds, label) {
         clearInterval(backwashTimer);
         let round = 0;
@@ -208,6 +254,9 @@ if (sections.bakwash) {
     // ####################################
     // Roast Calculator Logic
     // ####################################
+    /**
+     * Calculates and displays the results of the roast calculation.
+     */
     function calculateRoast() {
         const batchInputElement = document.getElementById('batchInput');
         const batchOutputElement = document.getElementById('batchOutput');
@@ -245,6 +294,9 @@ if (sections.bakwash) {
     // ####################################
     // Cafe Revenue Logic
     // ####################################
+    /**
+     * Calculates and displays the cafe revenue.
+     */
     function calculateCafeRevenue() {
         const costPerKGElement = document.getElementById('costPerKG');
         const costSingleShotElement = document.getElementById('costSingleShot');
@@ -294,6 +346,9 @@ if (sections.bakwash) {
         let timeRemaining = 0;
         const stageDurations = [0, 0];
 
+        /**
+         * Plays a beep sound.
+         */
         function playBeep() {
             try {
                 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -306,12 +361,18 @@ if (sections.bakwash) {
             } catch (e) { console.error("Could not play beep:", e); }
         }
 
+        /**
+         * Updates the stopwatch display.
+         */
         function updateDisplay() {
             const minutes = Math.floor(Math.abs(timeRemaining) / 60);
             const seconds = Math.abs(timeRemaining) % 60;
             stopwatchDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
 
+        /**
+         * Stops the stopwatch timer.
+         */
         function stopTimer() {
             clearInterval(timerInterval);
             isRunning = false;
@@ -319,6 +380,9 @@ if (sections.bakwash) {
             if (stageIndicator) stageIndicator.style.display = 'none';
         }
 
+        /**
+         * The main tick function for the stopwatch timer.
+         */
         function tick() {
             if (timeRemaining > 0) {
                 timeRemaining--;
@@ -338,6 +402,9 @@ if (sections.bakwash) {
             }
         }
 
+        /**
+         * Starts the stopwatch timer.
+         */
         function startTimer() {
             if (isRunning) return;
             if (timeRemaining <= 0) resetTimer();
@@ -352,6 +419,9 @@ if (sections.bakwash) {
             timerInterval = setInterval(tick, 1000);
         }
 
+        /**
+         * Toggles the stopwatch timer between start and pause.
+         */
         function toggleTimer() {
             if (isRunning) {
                 stopTimer();
@@ -360,6 +430,9 @@ if (sections.bakwash) {
             }
         }
 
+        /**
+         * Resets the stopwatch timer.
+         */
         function resetTimer() {
             stopTimer();
             currentStage = 1;
@@ -392,6 +465,9 @@ if (sections.bakwash) {
         const totalPercentageSpan = sections.mix.querySelector('#total-percentage');
         let beanRowCount = 0;
 
+        /**
+         * Creates a new bean row in the mix calculator.
+         */
         function createBeanRow() {
             if (beanRowsContainer.children.length >= 5) {
                 addBeanBtn.style.display = 'none';
@@ -429,6 +505,9 @@ if (sections.bakwash) {
             rowWrapper.querySelector('.bean-percentage').addEventListener('input', updateTotalPercentage);
         }
 
+        /**
+         * Updates the total percentage display in the mix calculator.
+         */
         function updateTotalPercentage() {
             const percentages = beanRowsContainer.querySelectorAll('.bean-percentage');
             let total = 0;
@@ -439,6 +518,9 @@ if (sections.bakwash) {
             totalPercentageSpan.style.color = (Math.round(total) === 100) ? '#28a745' : 'var(--danger-color)';
         }
 
+        /**
+         * Calculates and displays the price of the bean mix.
+         */
         function calculateMixPrice() {
             const rows = beanRowsContainer.querySelectorAll('.bean-row-wrapper');
             let totalPercentage = 0;
@@ -528,7 +610,12 @@ if (sections.bakwash) {
         const coffeeSearchInput = sections.priceList.querySelector('#coffee-search');
         const powderSearchInput = sections.priceList.querySelector('#powder-search');
 
-        // New, improved search/filter logic
+        /**
+         * Updates the options in a dropdown based on a search term.
+         * @param {HTMLSelectElement} selectElement - The select element to update.
+         * @param {string[]} allOptions - An array of all possible options.
+         * @param {string} searchTerm - The search term to filter by.
+         */
         function updateDropdownWithOptions(selectElement, allOptions, searchTerm) {
             const currentSelection = selectElement.value;
             const placeholderText = selectElement.querySelector('option[disabled]')?.textContent || 'انتخاب کنید';
@@ -616,6 +703,12 @@ if (sections.bakwash) {
             modalRoastTypeSelect.appendChild(option);
         });
 
+        /**
+         * Creates a dropdown element with the given options.
+         * @param {string[]} options - An array of strings for the options.
+         * @param {string} placeholder - The placeholder text for the dropdown.
+         * @returns {HTMLSelectElement} The created select element.
+         */
         function createDropdown(options, placeholder) {
             const select = document.createElement('select');
             if (placeholder) {
@@ -635,6 +728,11 @@ if (sections.bakwash) {
             return select;
         }
 
+        /**
+         * Shows the modal for entering coffee details.
+         * @param {HTMLElement} rowElement - The row element that triggered the modal.
+         * @param {string} coffeeType - The type of coffee selected.
+         */
         function showModal(rowElement, coffeeType) {
             currentRowForModal = rowElement;
             modalTitle.textContent = `اطلاعات دانه: ${coffeeType}`;
@@ -644,11 +742,17 @@ if (sections.bakwash) {
             roastModal.style.display = 'block';
         }
 
+        /**
+         * Hides the coffee details modal.
+         */
         function hideModal() {
             roastModal.style.display = 'none';
             currentRowForModal = null;
         }
 
+        /**
+         * Handles the confirmation of the coffee details modal.
+         */
         function handleModalConfirm() {
             if (!currentRowForModal) return;
 
@@ -681,6 +785,11 @@ if (sections.bakwash) {
             if (event.target === powderModal) hidePowderModal();
         });
 
+        /**
+         * Shows the modal for entering powder details.
+         * @param {HTMLElement} rowElement - The row element that triggered the modal.
+         * @param {string} powderType - The type of powder selected.
+         */
         function showPowderModal(rowElement, powderType) {
             currentRowForModal = rowElement;
             powderModalTitle.textContent = `اطلاعات محصول: ${powderType}`;
@@ -689,11 +798,17 @@ if (sections.bakwash) {
             powderModal.style.display = 'block';
         }
 
+        /**
+         * Hides the powder details modal.
+         */
         function hidePowderModal() {
             powderModal.style.display = 'none';
             currentRowForModal = null;
         }
 
+        /**
+         * Handles the confirmation of the powder details modal.
+         */
         function handlePowderModalConfirm() {
             if (!currentRowForModal) return;
 
@@ -717,7 +832,9 @@ if (sections.bakwash) {
         powderModalConfirmBtn.addEventListener('click', handlePowderModalConfirm);
         closePowderModalBtn.addEventListener('click', hidePowderModal);
 
-
+        /**
+         * Creates a new coffee row in the price list.
+         */
         function createCoffeeRow() {
             const row = document.createElement('div');
             row.className = 'price-list-dynamic-row';
@@ -744,6 +861,9 @@ if (sections.bakwash) {
             coffeeListContainer.appendChild(row);
         }
 
+        /**
+         * Creates a new powder row in the price list.
+         */
         function createPowderRow() {
             const row = document.createElement('div');
             row.className = 'price-list-dynamic-row';
@@ -767,6 +887,9 @@ if (sections.bakwash) {
             powderListContainer.appendChild(row);
         }
 
+        /**
+         * Generates an image of the price list.
+         */
         function generateImage() {
             const brandName = document.getElementById('brand-name').value || 'کافه شما';
             const socialId = document.getElementById('social-id').value || '@your_cafe';
