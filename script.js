@@ -121,6 +121,7 @@ if (sections.bakwash) {
 
     const start10Btn = document.getElementById('backwash-start10');
     const start5Btn = document.getElementById('backwash-start5');
+    const resetBtn = document.getElementById('backwash-reset');
 
     let backwashTimer = null;
 
@@ -193,6 +194,14 @@ if (sections.bakwash) {
     if (start5Btn) start5Btn.addEventListener('click', () => {
         runBackwashCycle(5, 5, 10, 'مرحله ۵ ثانیه‌ای');
     });
+
+    if (resetBtn) resetBtn.addEventListener('click', () => {
+        clearInterval(backwashTimer);
+        backwashStatus.innerText = 'وضعیت: آماده';
+        backwashDisplay.innerText = '00:00';
+        backwashBeep.pause();
+        backwashBeep.currentTime = 0;
+    });
 }
 
 
@@ -262,7 +271,7 @@ if (sections.bakwash) {
         const totalSalesShots = salesSingle + salesDouble, totalOtherCost = totalSalesShots * otherCostPerShot, totalDailyCost = costOfCoffeeUsed + totalOtherCost, totalDailyProfit = totalDailyRevenue - totalDailyCost;
         const daysInMonth = 30, totalMonthlyRevenue = totalDailyRevenue * daysInMonth, totalMonthlyProfit = totalDailyProfit * daysInMonth, totalMonthlyKGUsed = totalKGUsed * daysInMonth;
 
-        resultsDiv.innerHTML = `<h3>خلاصه روزانه</h3><p><strong>کل درآمد فروش روزانه:</strong> ${formatCurrency(totalDailyRevenue)} تومان</p><p><strong>کل هزینه (مواد + جانبی):</strong> ${formatCurrency(totalDailyCost)} تومان</p><p><strong>سود ناخالص روزانه:</strong> <span style="color: var(--primary-color); font-weight: bold;">${formatCurrency(totalDailyProfit)} تومان</span></p><p><strong>مقدار قهوه مصرفی روزانه:</strong> <strong>${totalKGUsed.toFixed(2)} کیلوگرم</strong></p><hr style="border-top: 1px dashed var(--accent-color); margin: 15px 0;"><h3>خلاصه ماهانه (30 روز)</h3><p><strong>کل درآمد ماهانه:</strong> ${formatCurrency(totalMonthlyRevenue)} تومان</p><p><strong>سود ناخالص ماهانه:</strong> <span style="color: var(--primary-color); font-weight: bold;">${formatCurrency(totalMonthlyProfit)} تومان</span></p><p><strong>مقدار قهوه مصرفی ماهانه:</strong> <strong>${totalMonthlyKGUsed.toFixed(2)} کیلوگرم</strong></p>`;
+        resultsDiv.innerHTML = `<h3>خلاصه روزانه</h3><p><strong>کل درآمد فروش روزانه:</strong> ${formatCurrency(totalDailyRevenue)} تومان</p><p><strong>کل هزینه (مواد + جانبی):</strong> ${formatCurrency(totalDailyCost)} تومان</p><p><strong>سود خالص روزانه:</strong> <span style="color: var(--primary-color); font-weight: bold;">${formatCurrency(totalDailyProfit)} تومان</span></p><p><strong>مقدار قهوه مصرفی روزانه:</strong> <strong>${totalKGUsed.toFixed(2)} کیلوگرم</strong></p><hr style="border-top: 1px dashed var(--accent-color); margin: 15px 0;"><h3>خلاصه ماهانه (30 روز)</h3><p><strong>کل درآمد ماهانه:</strong> ${formatCurrency(totalMonthlyRevenue)} تومان</p><p><strong>سود خالص ماهانه:</strong> <span style="color: var(--primary-color); font-weight: bold;">${formatCurrency(totalMonthlyProfit)} تومان</span></p><p><strong>مقدار قهوه مصرفی ماهانه:</strong> <strong>${totalKGUsed.toFixed(2)} کیلوگرم</strong></p>`;
     }
     if (buttons.calculateCafe) buttons.calculateCafe.addEventListener('click', calculateCafeRevenue);
 
@@ -508,7 +517,7 @@ if (sections.bakwash) {
     }
 
     // ####################################
-    // Price List Image Generation Logic (Redesigned)
+    // Price List Image Generation Logic (Redesigned with Modal)
     // ####################################
     if (sections.priceList) {
         const coffeeListContainer = sections.priceList.querySelector('#coffee-list-container');
@@ -516,20 +525,107 @@ if (sections.bakwash) {
         const addCoffeeRowBtn = sections.priceList.querySelector('#add-coffee-row-btn');
         const addPowderRowBtn = sections.priceList.querySelector('#add-powder-row-btn');
         const generateImageBtn = sections.priceList.querySelector('#generate-image-btn');
+        const coffeeSearchInput = sections.priceList.querySelector('#coffee-search');
+        const powderSearchInput = sections.priceList.querySelector('#powder-search');
 
-       const coffeeTypes = [
-  "ویتنام","برزیل","چری","کلمبیا","اندونزی PB","اوگاندا",
-  "اتیوپی","کنیا","یمن","گواتمالا","هندوراس","پرو","مکزیک",
-  "پاناما","کاستاریکا","اندونزی عربیکا","جاوا عربیکا","بوربون",
-  "تیپیکا","اندونزی روبوستا","برزیل روبوستا","هند روبوستا",
-  " 70/30 میکس عربیکا","50/50 میکس","100 عربیکا ","100 ربوستا ","70/30 میکس ربوستا"
-];
+        // New, improved search/filter logic
+        function updateDropdownWithOptions(selectElement, allOptions, searchTerm) {
+            const currentSelection = selectElement.value;
+            const placeholderText = selectElement.querySelector('option[disabled]')?.textContent || 'انتخاب کنید';
+
+            // Clear the select element and re-add the placeholder
+            selectElement.innerHTML = '';
+            const placeholderOption = document.createElement('option');
+            placeholderOption.value = "";
+            placeholderOption.textContent = placeholderText;
+            placeholderOption.disabled = true;
+            selectElement.appendChild(placeholderOption);
+
+            // Filter and add the new options
+            const filteredOptions = allOptions.filter(optionText =>
+                optionText.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            filteredOptions.forEach(optionText => {
+                const option = document.createElement('option');
+                option.value = optionText;
+                option.textContent = optionText;
+                selectElement.appendChild(option);
+            });
+
+            // Restore selection if it's still in the filtered list, otherwise default to placeholder
+            if (filteredOptions.includes(currentSelection)) {
+                selectElement.value = currentSelection;
+            } else {
+                selectElement.selectedIndex = 0;
+            }
+        }
+
+        coffeeSearchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value;
+            const rows = coffeeListContainer.querySelectorAll('.price-list-dynamic-row');
+            rows.forEach(row => {
+                const select = row.querySelector('select');
+                updateDropdownWithOptions(select, coffeeTypes, searchTerm);
+            });
+        });
+
+        powderSearchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value;
+            const rows = powderListContainer.querySelectorAll('.price-list-dynamic-row');
+            rows.forEach(row => {
+                const select = row.querySelector('select');
+                updateDropdownWithOptions(select, powderTypes, searchTerm);
+            });
+        });
+
+
+        // Modal Elements
+        const roastModal = document.getElementById('roast-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalRoastTypeSelect = document.getElementById('modal-roast-type');
+        const modalPurchasePriceInput = document.getElementById('modal-purchase-price');
+        const modalProfitPercentInput = document.getElementById('modal-profit-percent');
+        const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+        const closeModalBtn = roastModal.querySelector('.close-button');
+
+        const powderModal = document.getElementById('powder-modal');
+        const powderModalTitle = document.getElementById('powder-modal-title');
+        const powderModalPurchasePriceInput = document.getElementById('powder-modal-purchase-price');
+        const powderModalProfitPercentInput = document.getElementById('powder-modal-profit-percent');
+        const powderModalConfirmBtn = document.getElementById('powder-modal-confirm-btn');
+        const closePowderModalBtn = powderModal.querySelector('.close-button');
+
+        let currentRowForModal = null;
+
+        const coffeeTypes = [
+            "ویتنام","برزیل","چری","کلمبیا","اندونزی PB","اوگاندا",
+            "اتیوپی","کنیا","یمن","گواتمالا","هندوراس","پرو","مکزیک",
+            "پاناما","کاستاریکا","اندونزی عربیکا","جاوا عربیکا","بوربون",
+            "تیپیکا","اندونزی روبوستا","برزیل روبوستا","هند روبوستا",
+            " 70/30 میکس عربیکا","50/50 میکس","100 عربیکا ","100 ربوستا ","70/30 میکس ربوستا"
+        ];
         const roastTypes = ["مدیوم", "شکلاتی", "دارک"];
-        const powderTypes = ["گلد", "کاپوچینو ۷۰/۳۰", "کرک چای", "ماسالا", "هات چاکلت"];
-        
+        const powderTypes = ["ماسالا", "کافی میت", "کافی میکس", "کاپوچینو", "هات چاکلت", "وایت چاکلت", "پینک چاکلت", "چای کرکی", "گلد هند", "گلد برزیل", "گلد اکوادور"];
 
-        function createDropdown(options) {
+        // Populate modal roast types
+        roastTypes.forEach(type => {
+            const option = document.createElement('option');
+            option.value = type;
+            option.textContent = type;
+            modalRoastTypeSelect.appendChild(option);
+        });
+
+        function createDropdown(options, placeholder) {
             const select = document.createElement('select');
+            if (placeholder) {
+                const placeholderOption = document.createElement('option');
+                placeholderOption.value = "";
+                placeholderOption.textContent = placeholder;
+                placeholderOption.disabled = true;
+                placeholderOption.selected = true;
+                select.appendChild(placeholderOption);
+            }
             options.forEach(optionText => {
                 const option = document.createElement('option');
                 option.value = optionText;
@@ -539,25 +635,112 @@ if (sections.bakwash) {
             return select;
         }
 
+        function showModal(rowElement, coffeeType) {
+            currentRowForModal = rowElement;
+            modalTitle.textContent = `اطلاعات دانه: ${coffeeType}`;
+            modalRoastTypeSelect.selectedIndex = 0;
+            modalPurchasePriceInput.value = '';
+            modalProfitPercentInput.value = '';
+            roastModal.style.display = 'block';
+        }
+
+        function hideModal() {
+            roastModal.style.display = 'none';
+            currentRowForModal = null;
+        }
+
+        function handleModalConfirm() {
+            if (!currentRowForModal) return;
+
+            const purchasePrice = parseFloat(modalPurchasePriceInput.value);
+            const profitPercent = parseFloat(modalProfitPercentInput.value);
+            const roastType = modalRoastTypeSelect.value;
+
+            if (isNaN(purchasePrice) || isNaN(profitPercent) || purchasePrice <= 0 || profitPercent < 0) {
+                alert('لطفاً قیمت خرید و درصد سود را به درستی وارد کنید.');
+                return;
+            }
+
+            // We store the raw values in data attributes for later calculation
+            currentRowForModal.dataset.purchasePrice = purchasePrice;
+            currentRowForModal.dataset.profitPercent = profitPercent;
+            currentRowForModal.dataset.roastType = roastType;
+
+            // Update the display in the row
+            const finalPrice = purchasePrice * (1 + (profitPercent / 100));
+            currentRowForModal.querySelector('.price-display').textContent = `${formatCurrency(finalPrice)} تومان`;
+            currentRowForModal.querySelector('.roast-display').textContent = `(${roastType})`;
+
+            hideModal();
+        }
+
+        modalConfirmBtn.addEventListener('click', handleModalConfirm);
+        closeModalBtn.addEventListener('click', hideModal);
+        window.addEventListener('click', (event) => {
+            if (event.target === roastModal) hideModal();
+            if (event.target === powderModal) hidePowderModal();
+        });
+
+        function showPowderModal(rowElement, powderType) {
+            currentRowForModal = rowElement;
+            powderModalTitle.textContent = `اطلاعات محصول: ${powderType}`;
+            powderModalPurchasePriceInput.value = '';
+            powderModalProfitPercentInput.value = '';
+            powderModal.style.display = 'block';
+        }
+
+        function hidePowderModal() {
+            powderModal.style.display = 'none';
+            currentRowForModal = null;
+        }
+
+        function handlePowderModalConfirm() {
+            if (!currentRowForModal) return;
+
+            const purchasePrice = parseFloat(powderModalPurchasePriceInput.value);
+            const profitPercent = parseFloat(powderModalProfitPercentInput.value);
+
+            if (isNaN(purchasePrice) || isNaN(profitPercent) || purchasePrice <= 0 || profitPercent < 0) {
+                alert('لطفاً قیمت خرید و درصد سود را به درستی وارد کنید.');
+                return;
+            }
+
+            currentRowForModal.dataset.purchasePrice = purchasePrice;
+            currentRowForModal.dataset.profitPercent = profitPercent;
+
+            const finalPrice = purchasePrice * (1 + (profitPercent / 100));
+            currentRowForModal.querySelector('.price-display').textContent = `${formatCurrency(finalPrice)} تومان`;
+
+            hidePowderModal();
+        }
+
+        powderModalConfirmBtn.addEventListener('click', handlePowderModalConfirm);
+        closePowderModalBtn.addEventListener('click', hidePowderModal);
+
+
         function createCoffeeRow() {
             const row = document.createElement('div');
             row.className = 'price-list-dynamic-row';
 
-            const coffeeTypeSelect = createDropdown(coffeeTypes);
-            const roastTypeSelect = createDropdown(roastTypes);
-            const priceInput = document.createElement('input');
-            priceInput.type = 'number';
-            priceInput.placeholder = 'قیمت';
-            const percentageInput = document.createElement('input');
-            percentageInput.type = 'number';
-            percentageInput.placeholder = 'درصد';
+            const coffeeTypeSelect = createDropdown(coffeeTypes, 'نوع دانه را انتخاب کنید');
+            coffeeTypeSelect.addEventListener('change', () => {
+                if(coffeeTypeSelect.value) {
+                    showModal(row, coffeeTypeSelect.value);
+                }
+            });
+
+            const priceDisplay = document.createElement('span');
+            priceDisplay.className = 'price-display';
+
+            const roastDisplay = document.createElement('span');
+            roastDisplay.className = 'roast-display';
 
             const removeBtn = document.createElement('button');
             removeBtn.textContent = 'حذف';
             removeBtn.className = 'calc-button remove-row-btn';
             removeBtn.onclick = () => row.remove();
 
-            row.append(coffeeTypeSelect, roastTypeSelect, priceInput, percentageInput, removeBtn);
+            row.append(coffeeTypeSelect, priceDisplay, roastDisplay, removeBtn);
             coffeeListContainer.appendChild(row);
         }
 
@@ -565,20 +748,22 @@ if (sections.bakwash) {
             const row = document.createElement('div');
             row.className = 'price-list-dynamic-row';
 
-            const powderTypeSelect = createDropdown(powderTypes);
-            const priceInput = document.createElement('input');
-            priceInput.type = 'number';
-            priceInput.placeholder = 'قیمت';
-            const percentageInput = document.createElement('input');
-            percentageInput.type = 'number';
-            percentageInput.placeholder = 'درصد';
+            const powderTypeSelect = createDropdown(powderTypes, 'نوع پودر را انتخاب کنید');
+            powderTypeSelect.addEventListener('change', () => {
+                if(powderTypeSelect.value) {
+                    showPowderModal(row, powderTypeSelect.value);
+                }
+            });
+
+            const priceDisplay = document.createElement('span');
+            priceDisplay.className = 'price-display';
 
             const removeBtn = document.createElement('button');
             removeBtn.textContent = 'حذف';
             removeBtn.className = 'calc-button remove-row-btn';
             removeBtn.onclick = () => row.remove();
 
-            row.append(powderTypeSelect, priceInput, percentageInput, removeBtn);
+            row.append(powderTypeSelect, priceDisplay, removeBtn);
             powderListContainer.appendChild(row);
         }
 
@@ -598,10 +783,12 @@ if (sections.bakwash) {
 
             let hasCoffee = false;
             coffeeListContainer.querySelectorAll('.price-list-dynamic-row').forEach(row => {
-                const [coffee, roast, priceStr, percentStr] = Array.from(row.children).map(el => el.value);
-                const price = parseFloat(priceStr);
-                const percent = parseFloat(percentStr);
-                if (price && percent) {
+                const coffee = row.querySelector('select').value;
+                const roast = row.dataset.roastType;
+                const price = parseFloat(row.dataset.purchasePrice);
+                const percent = parseFloat(row.dataset.profitPercent);
+
+                if (coffee && roast && price && percent) {
                     hasCoffee = true;
                     const finalPrice = price * (1 + (percent / 100));
                     const item = document.createElement('div');
@@ -614,10 +801,11 @@ if (sections.bakwash) {
 
             let hasPowder = false;
             powderListContainer.querySelectorAll('.price-list-dynamic-row').forEach(row => {
-                const [powder, priceStr, percentStr] = Array.from(row.children).map(el => el.value);
-                const price = parseFloat(priceStr);
-                const percent = parseFloat(percentStr);
-                if (price && percent) {
+                const powder = row.querySelector('select').value;
+                const price = parseFloat(row.dataset.purchasePrice);
+                const percent = parseFloat(row.dataset.profitPercent);
+
+                if (powder && !isNaN(price) && !isNaN(percent)) {
                     hasPowder = true;
                     const finalPrice = price * (1 + (percent / 100));
                     const item = document.createElement('div');
@@ -642,6 +830,10 @@ if (sections.bakwash) {
                 link.download = `${brandName.replace(/\s+/g, '-')}-price-list.png`;
                 link.click();
                 imageTemplate.style.display = 'none';
+            }).catch(err => {
+                console.error("Error generating image:", err);
+                imageTemplate.style.display = 'none';
+                alert("متاسفانه در ایجاد تصویر مشکلی پیش آمد.");
             });
         }
 
@@ -649,7 +841,6 @@ if (sections.bakwash) {
         addPowderRowBtn.addEventListener('click', createPowderRow);
         generateImageBtn.addEventListener('click', generateImage);
 
-        // Add one of each row by default
         createCoffeeRow();
         createPowderRow();
     }

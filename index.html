@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
 <title>ابزار قهوه مجید | ریسپانسیو و مدرن</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -171,6 +172,7 @@
         <div class="stopwatch-controls">
             <button class="calc-button" id="backwash-start10">🔸 مرحله ۱۰ ثانیه‌ای</button>
             <button class="calc-button" id="backwash-start5">🟢 مرحله ۵ ثانیه‌ای</button>
+            <button class="calc-button" id="backwash-reset" style="background-color: var(--danger-color);">ریست</button>
         </div>
 
         <p id="backwash-status">وضعیت: آماده</p>
@@ -196,6 +198,9 @@
             <hr>
 
             <h3>لیست قیمت دانه‌های قهوه</h3>
+            <div class="input-group">
+                <input type="text" id="coffee-search" placeholder="جستجوی دانه..." style="margin-bottom: 1rem;">
+            </div>
             <div id="coffee-list-container" class="item-list-container">
                 <!-- Coffee rows will be added here by JS -->
             </div>
@@ -203,6 +208,9 @@
             <hr>
 
             <h3>لیست قیمت محصولات پودری</h3>
+            <div class="input-group">
+                <input type="text" id="powder-search" placeholder="جستجوی پودر..." style="margin-bottom: 1rem;">
+            </div>
             <div id="powder-list-container" class="item-list-container">
                 <!-- Powder rows will be added here by JS -->
             </div>
@@ -225,6 +233,44 @@
                     <p>تهیه شده با ابزار قهوه مجید</p>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal for Roast Type and Price -->
+    <div id="roast-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3 id="modal-title">اطلاعات دانه: </h3>
+            <div class="input-group">
+                <label for="modal-roast-type">نوع رست</label>
+                <select id="modal-roast-type"></select>
+            </div>
+            <div class="input-group">
+                <label for="modal-purchase-price">قیمت خرید (تومان/کیلوگرم)</label>
+                <input type="number" id="modal-purchase-price" placeholder="مثال: 500000">
+            </div>
+            <div class="input-group">
+                <label for="modal-profit-percent">درصد سود</label>
+                <input type="number" id="modal-profit-percent" placeholder="مثال: 30">
+            </div>
+            <button id="modal-confirm-btn" class="calc-button">تایید</button>
+        </div>
+    </div>
+
+    <!-- Modal for Powder Price -->
+    <div id="powder-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3 id="powder-modal-title">اطلاعات محصول پودری: </h3>
+            <div class="input-group">
+                <label for="powder-modal-purchase-price">قیمت خرید (تومان/کیلوگرم)</label>
+                <input type="number" id="powder-modal-purchase-price" placeholder="مثال: 150000">
+            </div>
+            <div class="input-group">
+                <label for="powder-modal-profit-percent">درصد سود</label>
+                <input type="number" id="powder-modal-profit-percent" placeholder="مثال: 40">
+            </div>
+            <button id="powder-modal-confirm-btn" class="calc-button">تایید</button>
         </div>
     </div>
 
