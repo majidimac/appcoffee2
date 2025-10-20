@@ -525,6 +525,14 @@ if (sections.bakwash) {
         const modalProfitPercentInput = document.getElementById('modal-profit-percent');
         const modalConfirmBtn = document.getElementById('modal-confirm-btn');
         const closeModalBtn = roastModal.querySelector('.close-button');
+
+        const powderModal = document.getElementById('powder-modal');
+        const powderModalTitle = document.getElementById('powder-modal-title');
+        const powderModalPurchasePriceInput = document.getElementById('powder-modal-purchase-price');
+        const powderModalProfitPercentInput = document.getElementById('powder-modal-profit-percent');
+        const powderModalConfirmBtn = document.getElementById('powder-modal-confirm-btn');
+        const closePowderModalBtn = powderModal.querySelector('.close-button');
+
         let currentRowForModal = null;
 
         const coffeeTypes = [
@@ -607,7 +615,44 @@ if (sections.bakwash) {
         closeModalBtn.addEventListener('click', hideModal);
         window.addEventListener('click', (event) => {
             if (event.target === roastModal) hideModal();
+            if (event.target === powderModal) hidePowderModal();
         });
+
+        function showPowderModal(rowElement, powderType) {
+            currentRowForModal = rowElement;
+            powderModalTitle.textContent = `اطلاعات محصول: ${powderType}`;
+            powderModalPurchasePriceInput.value = '';
+            powderModalProfitPercentInput.value = '';
+            powderModal.style.display = 'block';
+        }
+
+        function hidePowderModal() {
+            powderModal.style.display = 'none';
+            currentRowForModal = null;
+        }
+
+        function handlePowderModalConfirm() {
+            if (!currentRowForModal) return;
+
+            const purchasePrice = parseFloat(powderModalPurchasePriceInput.value);
+            const profitPercent = parseFloat(powderModalProfitPercentInput.value);
+
+            if (isNaN(purchasePrice) || isNaN(profitPercent) || purchasePrice <= 0 || profitPercent < 0) {
+                alert('لطفاً قیمت خرید و درصد سود را به درستی وارد کنید.');
+                return;
+            }
+
+            currentRowForModal.dataset.purchasePrice = purchasePrice;
+            currentRowForModal.dataset.profitPercent = profitPercent;
+
+            const finalPrice = purchasePrice * (1 + (profitPercent / 100));
+            currentRowForModal.querySelector('.price-display').textContent = `${formatCurrency(finalPrice)} تومان`;
+
+            hidePowderModal();
+        }
+
+        powderModalConfirmBtn.addEventListener('click', handlePowderModalConfirm);
+        closePowderModalBtn.addEventListener('click', hidePowderModal);
 
 
         function createCoffeeRow() {
@@ -640,20 +685,22 @@ if (sections.bakwash) {
             const row = document.createElement('div');
             row.className = 'price-list-dynamic-row';
 
-            const powderTypeSelect = createDropdown(powderTypes);
-            const priceInput = document.createElement('input');
-            priceInput.type = 'number';
-            priceInput.placeholder = 'قیمت';
-            const percentageInput = document.createElement('input');
-            percentageInput.type = 'number';
-            percentageInput.placeholder = 'درصد';
+            const powderTypeSelect = createDropdown(powderTypes, 'نوع پودر را انتخاب کنید');
+            powderTypeSelect.addEventListener('change', () => {
+                if(powderTypeSelect.value) {
+                    showPowderModal(row, powderTypeSelect.value);
+                }
+            });
+
+            const priceDisplay = document.createElement('span');
+            priceDisplay.className = 'price-display';
 
             const removeBtn = document.createElement('button');
             removeBtn.textContent = 'حذف';
             removeBtn.className = 'calc-button remove-row-btn';
             removeBtn.onclick = () => row.remove();
 
-            row.append(powderTypeSelect, priceInput, percentageInput, removeBtn);
+            row.append(powderTypeSelect, priceDisplay, removeBtn);
             powderListContainer.appendChild(row);
         }
 
@@ -691,10 +738,11 @@ if (sections.bakwash) {
 
             let hasPowder = false;
             powderListContainer.querySelectorAll('.price-list-dynamic-row').forEach(row => {
-                 const [powder, priceStr, percentStr] = Array.from(row.children).map(el => el.value);
-                const price = parseFloat(priceStr);
-                const percent = parseFloat(percentStr);
-                if (price && percent) {
+                const powder = row.querySelector('select').value;
+                const price = parseFloat(row.dataset.purchasePrice);
+                const percent = parseFloat(row.dataset.profitPercent);
+
+                if (powder && !isNaN(price) && !isNaN(percent)) {
                     hasPowder = true;
                     const finalPrice = price * (1 + (percent / 100));
                     const item = document.createElement('div');
