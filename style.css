@@ -168,6 +168,11 @@ footer {
     box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
     outline: none;
 }
+/* Improve placeholder text visibility */
+.input-group input::placeholder {
+    color: #ccc; /* Lighter gray for better contrast */
+    opacity: 1; /* Ensure the color is not faded */
+}
 .invalid-input {
     border-color: var(--danger-color) !important;
     box-shadow: 0 0 8px rgba(220, 53, 69, 0.5) !important;
