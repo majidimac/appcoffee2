@@ -516,6 +516,70 @@ if (sections.bakwash) {
         const addCoffeeRowBtn = sections.priceList.querySelector('#add-coffee-row-btn');
         const addPowderRowBtn = sections.priceList.querySelector('#add-powder-row-btn');
         const generateImageBtn = sections.priceList.querySelector('#generate-image-btn');
+        const coffeeSearchInput = sections.priceList.querySelector('#coffee-search');
+        const powderSearchInput = sections.priceList.querySelector('#powder-search');
+
+        // Search/Filter Logic
+        function filterDropdown(searchInput, container) {
+            const searchTerm = searchInput.value.toLowerCase();
+            const rows = container.querySelectorAll('.price-list-dynamic-row');
+            rows.forEach(row => {
+                const select = row.querySelector('select');
+                const selectedValue = select.value.toLowerCase();
+                // If a value is already selected, don't hide it. Otherwise, filter options.
+                if (select.value) {
+                     row.style.display = selectedValue.includes(searchTerm) ? '' : 'none';
+                } else {
+                    // This part handles filtering the options within the dropdown itself when it's opened.
+                    // It's more complex and might not be what's needed.
+                    // Let's stick to filtering visible rows for now.
+                    row.style.display = ''; // Show all rows that don't have a selection
+                }
+            });
+        }
+
+        function filterOptions(searchInput, selectElement, allOptions) {
+            const searchTerm = searchInput.value.toLowerCase();
+            const originalOptions = Array.from(selectElement.querySelectorAll('option'));
+
+            // Re-add all original options before filtering
+            while(selectElement.options.length > 1) {
+                selectElement.remove(1);
+            }
+
+            const baseOptions = selectElement.options[0].value === "" ? [selectElement.options[0]] : [];
+
+            const filteredOptions = allOptions.filter(optionText => optionText.toLowerCase().includes(searchTerm));
+
+            filteredOptions.forEach(optionText => {
+                 const option = document.createElement('option');
+                 option.value = optionText;
+                 option.textContent = optionText;
+                 selectElement.appendChild(option);
+            });
+        }
+
+
+        coffeeSearchInput.addEventListener('input', () => {
+             const rows = coffeeListContainer.querySelectorAll('.price-list-dynamic-row');
+             rows.forEach(row => {
+                const select = row.querySelector('select');
+                if (!select.value) { // Only filter dropdowns that haven't been selected yet
+                    filterOptions(coffeeSearchInput, select, coffeeTypes);
+                }
+             });
+        });
+
+        powderSearchInput.addEventListener('input', () => {
+            const rows = powderListContainer.querySelectorAll('.price-list-dynamic-row');
+             rows.forEach(row => {
+                const select = row.querySelector('select');
+                if (!select.value) { // Only filter dropdowns that haven't been selected yet
+                    filterOptions(powderSearchInput, select, powderTypes);
+                }
+             });
+        });
+
 
         // Modal Elements
         const roastModal = document.getElementById('roast-modal');
@@ -543,7 +607,7 @@ if (sections.bakwash) {
             " 70/30 میکس عربیکا","50/50 میکس","100 عربیکا ","100 ربوستا ","70/30 میکس ربوستا"
         ];
         const roastTypes = ["مدیوم", "شکلاتی", "دارک"];
-        const powderTypes = ["گلد", "کاپوچینو ۷۰/۳۰", "کرک چای", "ماسالا", "هات چاکلت"];
+        const powderTypes = ["ماسالا", "کافی میت", "کافی میکس", "کاپوچینو", "هات چاکلت", "وایت چاکلت", "پینک چاکلت", "چای کرکی", "گلد هند", "گلد برزیل", "گلد اکوادور"];
 
         // Populate modal roast types
         roastTypes.forEach(type => {
