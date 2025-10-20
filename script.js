@@ -528,65 +528,55 @@ if (sections.bakwash) {
         const coffeeSearchInput = sections.priceList.querySelector('#coffee-search');
         const powderSearchInput = sections.priceList.querySelector('#powder-search');
 
-        // Search/Filter Logic
-        function filterDropdown(searchInput, container) {
-            const searchTerm = searchInput.value.toLowerCase();
-            const rows = container.querySelectorAll('.price-list-dynamic-row');
-            rows.forEach(row => {
-                const select = row.querySelector('select');
-                const selectedValue = select.value.toLowerCase();
-                // If a value is already selected, don't hide it. Otherwise, filter options.
-                if (select.value) {
-                     row.style.display = selectedValue.includes(searchTerm) ? '' : 'none';
-                } else {
-                    // This part handles filtering the options within the dropdown itself when it's opened.
-                    // It's more complex and might not be what's needed.
-                    // Let's stick to filtering visible rows for now.
-                    row.style.display = ''; // Show all rows that don't have a selection
-                }
-            });
-        }
+        // New, improved search/filter logic
+        function updateDropdownWithOptions(selectElement, allOptions, searchTerm) {
+            const currentSelection = selectElement.value;
+            const placeholderText = selectElement.querySelector('option[disabled]')?.textContent || 'انتخاب کنید';
 
-        function filterOptions(searchInput, selectElement, allOptions) {
-            const searchTerm = searchInput.value.toLowerCase();
-            const originalOptions = Array.from(selectElement.querySelectorAll('option'));
+            // Clear the select element and re-add the placeholder
+            selectElement.innerHTML = '';
+            const placeholderOption = document.createElement('option');
+            placeholderOption.value = "";
+            placeholderOption.textContent = placeholderText;
+            placeholderOption.disabled = true;
+            selectElement.appendChild(placeholderOption);
 
-            // Re-add all original options before filtering
-            while(selectElement.options.length > 1) {
-                selectElement.remove(1);
-            }
-
-            const baseOptions = selectElement.options[0].value === "" ? [selectElement.options[0]] : [];
-
-            const filteredOptions = allOptions.filter(optionText => optionText.toLowerCase().includes(searchTerm));
+            // Filter and add the new options
+            const filteredOptions = allOptions.filter(optionText =>
+                optionText.toLowerCase().includes(searchTerm.toLowerCase())
+            );
 
             filteredOptions.forEach(optionText => {
-                 const option = document.createElement('option');
-                 option.value = optionText;
-                 option.textContent = optionText;
-                 selectElement.appendChild(option);
+                const option = document.createElement('option');
+                option.value = optionText;
+                option.textContent = optionText;
+                selectElement.appendChild(option);
             });
+
+            // Restore selection if it's still in the filtered list, otherwise default to placeholder
+            if (filteredOptions.includes(currentSelection)) {
+                selectElement.value = currentSelection;
+            } else {
+                selectElement.selectedIndex = 0;
+            }
         }
 
-
-        coffeeSearchInput.addEventListener('input', () => {
-             const rows = coffeeListContainer.querySelectorAll('.price-list-dynamic-row');
-             rows.forEach(row => {
+        coffeeSearchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value;
+            const rows = coffeeListContainer.querySelectorAll('.price-list-dynamic-row');
+            rows.forEach(row => {
                 const select = row.querySelector('select');
-                if (!select.value) { // Only filter dropdowns that haven't been selected yet
-                    filterOptions(coffeeSearchInput, select, coffeeTypes);
-                }
-             });
+                updateDropdownWithOptions(select, coffeeTypes, searchTerm);
+            });
         });
 
-        powderSearchInput.addEventListener('input', () => {
+        powderSearchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value;
             const rows = powderListContainer.querySelectorAll('.price-list-dynamic-row');
-             rows.forEach(row => {
+            rows.forEach(row => {
                 const select = row.querySelector('select');
-                if (!select.value) { // Only filter dropdowns that haven't been selected yet
-                    filterOptions(powderSearchInput, select, powderTypes);
-                }
-             });
+                updateDropdownWithOptions(select, powderTypes, searchTerm);
+            });
         });
 
 
