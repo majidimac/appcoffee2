@@ -121,6 +121,7 @@ if (sections.bakwash) {
 
     const start10Btn = document.getElementById('backwash-start10');
     const start5Btn = document.getElementById('backwash-start5');
+    const resetBtn = document.getElementById('backwash-reset');
 
     let backwashTimer = null;
 
@@ -192,6 +193,14 @@ if (sections.bakwash) {
 
     if (start5Btn) start5Btn.addEventListener('click', () => {
         runBackwashCycle(5, 5, 10, 'مرحله ۵ ثانیه‌ای');
+    });
+
+    if (resetBtn) resetBtn.addEventListener('click', () => {
+        clearInterval(backwashTimer);
+        backwashStatus.innerText = 'وضعیت: آماده';
+        backwashDisplay.innerText = '00:00';
+        backwashBeep.pause();
+        backwashBeep.currentTime = 0;
     });
 }
 
