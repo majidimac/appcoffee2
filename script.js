@@ -34,6 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // ####################################
     // Clock Logic
     // ####################################
+    /**
+     * Updates the live clock element with the current time.
+     */
     function updateClock() {
         if (!clockElement) return;
         const now = new Date();
@@ -46,15 +49,31 @@ document.addEventListener('DOMContentLoaded', () => {
     // ####################################
     // Theme Switcher Logic
     // ####################################
+    /**
+     * Retrieves the stored theme from local storage.
+     * @returns {string|null} The stored theme or null if not set.
+     */
     const getStoredTheme = () => localStorage.getItem('theme');
+    /**
+     * Stores the selected theme in local storage.
+     * @param {string} theme - The theme to store.
+     */
     const setStoredTheme = theme => localStorage.setItem('theme', theme);
 
+    /**
+     * Determines the preferred theme based on local storage or system settings.
+     * @returns {string} The preferred theme ('dark' or 'light').
+     */
     const getPreferredTheme = () => {
         const storedTheme = getStoredTheme();
         if (storedTheme) return storedTheme;
         return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     };
 
+    /**
+     * Applies the selected theme to the document.
+     * @param {string} theme - The theme to apply ('dark' or 'light').
+     */
     const setTheme = theme => {
         const isDark = theme === 'dark';
         document.documentElement.setAttribute('data-theme', theme);
@@ -76,6 +95,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // ####################################
     // Navigation Logic
     // ####################################
+    /**
+     * Shows a specific section and hides all others.
+     * @param {string} sectionId - The ID of the section to show.
+     */
     function showSection(sectionId) {
         Object.values(sections).forEach(section => {
             if(section) section.style.display = 'none';
@@ -98,11 +121,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // ####################################
     // Helper Functions
     // ####################################
+    /**
+     * Formats a number as a currency string.
+     * @param {number} number - The number to format.
+     * @returns {string} The formatted currency string.
+     */
     function formatCurrency(number) {
         if (isNaN(number)) return '0';
         return number.toLocaleString('fa-IR', { maximumFractionDigits: 0 });
     }
 
+    /**
+     * Gets the numeric value of an input field.
+     * @param {string} elementId - The ID of the input element.
+     * @param {*} [defaultValue=0] - The default value to return if the input is invalid.
+     * @returns {number} The numeric value of the input.
+     */
     function getInputValue(elementId, defaultValue = 0) {
         const input = document.getElementById(elementId);
         if (!input) return defaultValue;
@@ -125,20 +159,32 @@ if (sections.bakwash) {
 
     let backwashTimer = null;
 
-    // فرمت زمان برای نمایش
+    /**
+     * Formats a number of seconds into a mm:ss time string.
+     * @param {number} sec - The number of seconds.
+     * @returns {string} The formatted time string.
+     */
     function formatTime(sec) {
         const m = String(Math.floor(sec / 60)).padStart(2, '0');
         const s = String(sec % 60).padStart(2, '0');
         return `${m}:${s}`;
     }
 
-    // پخش صدای بوق
+    /**
+     * Plays the backwash beep sound.
+     */
     function playBackwashBeep() {
         backwashBeep.currentTime = 0;
         backwashBeep.play().catch(() => {});
     }
 
-    // اجرای چرخه روشن/خاموش
+    /**
+     * Runs a backwash cycle with specified on/off times and rounds.
+     * @param {number} onTime - The time in seconds for the "on" phase.
+     * @param {number} offTime - The time in seconds for the "off" phase.
+     * @param {number} totalRounds - The total number of rounds.
+     * @param {string} label - The label for the cycle.
+     */
     function runBackwashCycle(onTime, offTime, totalRounds, label) {
         clearInterval(backwashTimer);
         let round = 0;
@@ -208,6 +254,9 @@ if (sections.bakwash) {
     // ####################################
     // Roast Calculator Logic
     // ####################################
+    /**
+     * Calculates and displays the results of the roast calculation.
+     */
     function calculateRoast() {
         const batchInputElement = document.getElementById('batchInput');
         const batchOutputElement = document.getElementById('batchOutput');
@@ -245,6 +294,9 @@ if (sections.bakwash) {
     // ####################################
     // Cafe Revenue Logic
     // ####################################
+    /**
+     * Calculates and displays the cafe revenue.
+     */
     function calculateCafeRevenue() {
         const costPerKGElement = document.getElementById('costPerKG');
         const costSingleShotElement = document.getElementById('costSingleShot');
@@ -294,6 +346,9 @@ if (sections.bakwash) {
         let timeRemaining = 0;
         const stageDurations = [0, 0];
 
+        /**
+         * Plays a beep sound.
+         */
         function playBeep() {
             try {
                 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -306,12 +361,18 @@ if (sections.bakwash) {
             } catch (e) { console.error("Could not play beep:", e); }
         }
 
+        /**
+         * Updates the stopwatch display.
+         */
         function updateDisplay() {
             const minutes = Math.floor(Math.abs(timeRemaining) / 60);
             const seconds = Math.abs(timeRemaining) % 60;
             stopwatchDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
 
+        /**
+         * Stops the stopwatch timer.
+         */
         function stopTimer() {
             clearInterval(timerInterval);
             isRunning = false;
@@ -319,6 +380,9 @@ if (sections.bakwash) {
             if (stageIndicator) stageIndicator.style.display = 'none';
         }
 
+        /**
+         * The main tick function for the stopwatch timer.
+         */
         function tick() {
             if (timeRemaining > 0) {
                 timeRemaining--;
@@ -338,6 +402,9 @@ if (sections.bakwash) {
             }
         }
 
+        /**
+         * Starts the stopwatch timer.
+         */
         function startTimer() {
             if (isRunning) return;
             if (timeRemaining <= 0) resetTimer();
@@ -352,6 +419,9 @@ if (sections.bakwash) {
             timerInterval = setInterval(tick, 1000);
         }
 
+        /**
+         * Toggles the stopwatch timer between start and pause.
+         */
         function toggleTimer() {
             if (isRunning) {
                 stopTimer();
@@ -360,6 +430,9 @@ if (sections.bakwash) {
             }
         }
 
+        /**
+         * Resets the stopwatch timer.
+         */
         function resetTimer() {
             stopTimer();
             currentStage = 1;
@@ -392,6 +465,9 @@ if (sections.bakwash) {
         const totalPercentageSpan = sections.mix.querySelector('#total-percentage');
         let beanRowCount = 0;
 
+        /**
+         * Creates a new bean row in the mix calculator.
+         */
         function createBeanRow() {
             if (beanRowsContainer.children.length >= 5) {
                 addBeanBtn.style.display = 'none';
@@ -429,6 +505,9 @@ if (sections.bakwash) {
             rowWrapper.querySelector('.bean-percentage').addEventListener('input', updateTotalPercentage);
         }
 
+        /**
+         * Updates the total percentage display in the mix calculator.
+         */
         function updateTotalPercentage() {
             const percentages = beanRowsContainer.querySelectorAll('.bean-percentage');
             let total = 0;
@@ -439,6 +518,9 @@ if (sections.bakwash) {
             totalPercentageSpan.style.color = (Math.round(total) === 100) ? '#28a745' : 'var(--danger-color)';
         }
 
+        /**
+         * Calculates and displays the price of the bean mix.
+         */
         function calculateMixPrice() {
             const rows = beanRowsContainer.querySelectorAll('.bean-row-wrapper');
             let totalPercentage = 0;
@@ -522,63 +604,9 @@ if (sections.bakwash) {
     if (sections.priceList) {
         const coffeeListContainer = sections.priceList.querySelector('#coffee-list-container');
         const powderListContainer = sections.priceList.querySelector('#powder-list-container');
-        const addCoffeeRowBtn = sections.priceList.querySelector('#add-coffee-row-btn');
-        const addPowderRowBtn = sections.priceList.querySelector('#add-powder-row-btn');
         const generateImageBtn = sections.priceList.querySelector('#generate-image-btn');
         const coffeeSearchInput = sections.priceList.querySelector('#coffee-search');
         const powderSearchInput = sections.priceList.querySelector('#powder-search');
-
-        // New, improved search/filter logic
-        function updateDropdownWithOptions(selectElement, allOptions, searchTerm) {
-            const currentSelection = selectElement.value;
-            const placeholderText = selectElement.querySelector('option[disabled]')?.textContent || 'انتخاب کنید';
-
-            // Clear the select element and re-add the placeholder
-            selectElement.innerHTML = '';
-            const placeholderOption = document.createElement('option');
-            placeholderOption.value = "";
-            placeholderOption.textContent = placeholderText;
-            placeholderOption.disabled = true;
-            selectElement.appendChild(placeholderOption);
-
-            // Filter and add the new options
-            const filteredOptions = allOptions.filter(optionText =>
-                optionText.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-
-            filteredOptions.forEach(optionText => {
-                const option = document.createElement('option');
-                option.value = optionText;
-                option.textContent = optionText;
-                selectElement.appendChild(option);
-            });
-
-            // Restore selection if it's still in the filtered list, otherwise default to placeholder
-            if (filteredOptions.includes(currentSelection)) {
-                selectElement.value = currentSelection;
-            } else {
-                selectElement.selectedIndex = 0;
-            }
-        }
-
-        coffeeSearchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value;
-            const rows = coffeeListContainer.querySelectorAll('.price-list-dynamic-row');
-            rows.forEach(row => {
-                const select = row.querySelector('select');
-                updateDropdownWithOptions(select, coffeeTypes, searchTerm);
-            });
-        });
-
-        powderSearchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value;
-            const rows = powderListContainer.querySelectorAll('.price-list-dynamic-row');
-            rows.forEach(row => {
-                const select = row.querySelector('select');
-                updateDropdownWithOptions(select, powderTypes, searchTerm);
-            });
-        });
-
 
         // Modal Elements
         const roastModal = document.getElementById('roast-modal');
@@ -589,24 +617,19 @@ if (sections.bakwash) {
         const modalConfirmBtn = document.getElementById('modal-confirm-btn');
         const closeModalBtn = roastModal.querySelector('.close-button');
 
-        const powderModal = document.getElementById('powder-modal');
-        const powderModalTitle = document.getElementById('powder-modal-title');
-        const powderModalPurchasePriceInput = document.getElementById('powder-modal-purchase-price');
-        const powderModalProfitPercentInput = document.getElementById('powder-modal-profit-percent');
-        const powderModalConfirmBtn = document.getElementById('powder-modal-confirm-btn');
-        const closePowderModalBtn = powderModal.querySelector('.close-button');
-
         let currentRowForModal = null;
 
         const coffeeTypes = [
-            "ویتنام","برزیل","چری","کلمبیا","اندونزی PB","اوگاندا",
+            "ویتنام","برزیل","چری","کلمبیا","اندونزی","PB","اوگاندا",
             "اتیوپی","کنیا","یمن","گواتمالا","هندوراس","پرو","مکزیک",
             "پاناما","کاستاریکا","اندونزی عربیکا","جاوا عربیکا","بوربون",
             "تیپیکا","اندونزی روبوستا","برزیل روبوستا","هند روبوستا",
             " 70/30 میکس عربیکا","50/50 میکس","100 عربیکا ","100 ربوستا ","70/30 میکس ربوستا"
         ];
+        const powderTypes = [
+            "شکلات داغ","شکلات سفید","چای ماسالا","ثعلب","کاپوچینو","کافی میکس"
+        ];
         const roastTypes = ["مدیوم", "شکلاتی", "دارک"];
-        const powderTypes = ["ماسالا", "کافی میت", "کافی میکس", "کاپوچینو", "هات چاکلت", "وایت چاکلت", "پینک چاکلت", "چای کرکی", "گلد هند", "گلد برزیل", "گلد اکوادور"];
 
         // Populate modal roast types
         roastTypes.forEach(type => {
@@ -616,60 +639,68 @@ if (sections.bakwash) {
             modalRoastTypeSelect.appendChild(option);
         });
 
-        function createDropdown(options, placeholder) {
-            const select = document.createElement('select');
-            if (placeholder) {
-                const placeholderOption = document.createElement('option');
-                placeholderOption.value = "";
-                placeholderOption.textContent = placeholder;
-                placeholderOption.disabled = true;
-                placeholderOption.selected = true;
-                select.appendChild(placeholderOption);
-            }
-            options.forEach(optionText => {
-                const option = document.createElement('option');
-                option.value = optionText;
-                option.textContent = optionText;
-                select.appendChild(option);
-            });
-            return select;
-        }
-
-        function showModal(rowElement, coffeeType) {
+        /**
+         * Shows the modal for entering coffee details.
+         * @param {HTMLElement} rowElement - The row element that triggered the modal.
+         * @param {string} coffeeType - The type of coffee selected.
+         */
+        function showModal(rowElement, coffeeType, productType = 'coffee') {
             currentRowForModal = rowElement;
-            modalTitle.textContent = `اطلاعات دانه: ${coffeeType}`;
-            modalRoastTypeSelect.selectedIndex = 0;
+            currentRowForModal.dataset.productType = productType; // Store the type
+            modalTitle.textContent = `اطلاعات: ${coffeeType}`;
             modalPurchasePriceInput.value = '';
             modalProfitPercentInput.value = '';
+
+            // Show or hide the roast type selector based on the product type
+            const roastTypeGroup = document.getElementById('roast-type-group');
+            if (productType === 'powder') {
+                roastTypeGroup.style.display = 'none';
+            } else {
+                roastTypeGroup.style.display = 'block';
+                modalRoastTypeSelect.selectedIndex = 0;
+            }
+
             roastModal.style.display = 'block';
         }
 
+        /**
+         * Hides the coffee details modal.
+         */
         function hideModal() {
             roastModal.style.display = 'none';
             currentRowForModal = null;
         }
 
+        /**
+         * Handles the confirmation of the coffee details modal.
+         */
         function handleModalConfirm() {
             if (!currentRowForModal) return;
 
             const purchasePrice = parseFloat(modalPurchasePriceInput.value);
             const profitPercent = parseFloat(modalProfitPercentInput.value);
-            const roastType = modalRoastTypeSelect.value;
 
             if (isNaN(purchasePrice) || isNaN(profitPercent) || purchasePrice <= 0 || profitPercent < 0) {
                 alert('لطفاً قیمت خرید و درصد سود را به درستی وارد کنید.');
                 return;
             }
 
-            // We store the raw values in data attributes for later calculation
+            // Store raw values in data attributes
             currentRowForModal.dataset.purchasePrice = purchasePrice;
             currentRowForModal.dataset.profitPercent = profitPercent;
-            currentRowForModal.dataset.roastType = roastType;
 
-            // Update the display in the row
             const finalPrice = purchasePrice * (1 + (profitPercent / 100));
             currentRowForModal.querySelector('.price-display').textContent = `${formatCurrency(finalPrice)} تومان`;
-            currentRowForModal.querySelector('.roast-display').textContent = `(${roastType})`;
+
+            // Only handle roast type for coffee products
+            if (currentRowForModal.dataset.productType === 'coffee') {
+                const roastType = modalRoastTypeSelect.value;
+                currentRowForModal.dataset.roastType = roastType;
+                const roastDisplay = currentRowForModal.querySelector('.roast-display');
+                if (roastDisplay) {
+                    roastDisplay.textContent = `(${roastType})`;
+                }
+            }
 
             hideModal();
         }
@@ -678,56 +709,17 @@ if (sections.bakwash) {
         closeModalBtn.addEventListener('click', hideModal);
         window.addEventListener('click', (event) => {
             if (event.target === roastModal) hideModal();
-            if (event.target === powderModal) hidePowderModal();
         });
 
-        function showPowderModal(rowElement, powderType) {
-            currentRowForModal = rowElement;
-            powderModalTitle.textContent = `اطلاعات محصول: ${powderType}`;
-            powderModalPurchasePriceInput.value = '';
-            powderModalProfitPercentInput.value = '';
-            powderModal.style.display = 'block';
-        }
-
-        function hidePowderModal() {
-            powderModal.style.display = 'none';
-            currentRowForModal = null;
-        }
-
-        function handlePowderModalConfirm() {
-            if (!currentRowForModal) return;
-
-            const purchasePrice = parseFloat(powderModalPurchasePriceInput.value);
-            const profitPercent = parseFloat(powderModalProfitPercentInput.value);
-
-            if (isNaN(purchasePrice) || isNaN(profitPercent) || purchasePrice <= 0 || profitPercent < 0) {
-                alert('لطفاً قیمت خرید و درصد سود را به درستی وارد کنید.');
-                return;
-            }
-
-            currentRowForModal.dataset.purchasePrice = purchasePrice;
-            currentRowForModal.dataset.profitPercent = profitPercent;
-
-            const finalPrice = purchasePrice * (1 + (profitPercent / 100));
-            currentRowForModal.querySelector('.price-display').textContent = `${formatCurrency(finalPrice)} تومان`;
-
-            hidePowderModal();
-        }
-
-        powderModalConfirmBtn.addEventListener('click', handlePowderModalConfirm);
-        closePowderModalBtn.addEventListener('click', hidePowderModal);
-
-
-        function createCoffeeRow() {
+        /**
+         * Creates a new coffee row in the price list.
+         */
+        function createCoffeeRow(coffeeType) {
             const row = document.createElement('div');
             row.className = 'price-list-dynamic-row';
 
-            const coffeeTypeSelect = createDropdown(coffeeTypes, 'نوع دانه را انتخاب کنید');
-            coffeeTypeSelect.addEventListener('change', () => {
-                if(coffeeTypeSelect.value) {
-                    showModal(row, coffeeTypeSelect.value);
-                }
-            });
+            const coffeeName = document.createElement('span');
+            coffeeName.textContent = coffeeType;
 
             const priceDisplay = document.createElement('span');
             priceDisplay.className = 'price-display';
@@ -740,33 +732,36 @@ if (sections.bakwash) {
             removeBtn.className = 'calc-button remove-row-btn';
             removeBtn.onclick = () => row.remove();
 
-            row.append(coffeeTypeSelect, priceDisplay, roastDisplay, removeBtn);
+            row.append(coffeeName, priceDisplay, roastDisplay, removeBtn);
             coffeeListContainer.appendChild(row);
+
+            showModal(row, coffeeType);
         }
 
-        function createPowderRow() {
+        /**
+         * Creates a new powder row in the price list.
+         */
+        function createPowderRow(powderType) {
             const row = document.createElement('div');
             row.className = 'price-list-dynamic-row';
-
-            const powderTypeSelect = createDropdown(powderTypes, 'نوع پودر را انتخاب کنید');
-            powderTypeSelect.addEventListener('change', () => {
-                if(powderTypeSelect.value) {
-                    showPowderModal(row, powderTypeSelect.value);
-                }
-            });
-
+            const powderName = document.createElement('span');
+            powderName.textContent = powderType;
             const priceDisplay = document.createElement('span');
             priceDisplay.className = 'price-display';
-
             const removeBtn = document.createElement('button');
             removeBtn.textContent = 'حذف';
             removeBtn.className = 'calc-button remove-row-btn';
             removeBtn.onclick = () => row.remove();
-
-            row.append(powderTypeSelect, priceDisplay, removeBtn);
+            row.append(powderName, priceDisplay, removeBtn);
             powderListContainer.appendChild(row);
+
+            showModal(row, powderType, 'powder');
         }
 
+
+        /**
+         * Generates an image of the price list.
+         */
         function generateImage() {
             const brandName = document.getElementById('brand-name').value || 'کافه شما';
             const socialId = document.getElementById('social-id').value || '@your_cafe';
@@ -781,15 +776,15 @@ if (sections.bakwash) {
             imageCoffeeList.innerHTML = '<h3>دانه‌های قهوه</h3>';
             imagePowderList.innerHTML = '<h3>محصولات پودری</h3>';
 
-            let hasCoffee = false;
+            let hasContent = false;
             coffeeListContainer.querySelectorAll('.price-list-dynamic-row').forEach(row => {
-                const coffee = row.querySelector('select').value;
+                const coffee = row.querySelector('span').textContent;
                 const roast = row.dataset.roastType;
                 const price = parseFloat(row.dataset.purchasePrice);
                 const percent = parseFloat(row.dataset.profitPercent);
 
-                if (coffee && roast && price && percent) {
-                    hasCoffee = true;
+                if (coffee && roast && !isNaN(price) && !isNaN(percent)) {
+                    hasContent = true;
                     const finalPrice = price * (1 + (percent / 100));
                     const item = document.createElement('div');
                     item.className = 'image-item-row';
@@ -797,16 +792,16 @@ if (sections.bakwash) {
                     imageCoffeeList.appendChild(item);
                 }
             });
-            if (!hasCoffee) imageCoffeeList.innerHTML = '';
+            if (imageCoffeeList.children.length <= 1) imageCoffeeList.innerHTML = '';
 
-            let hasPowder = false;
+
             powderListContainer.querySelectorAll('.price-list-dynamic-row').forEach(row => {
-                const powder = row.querySelector('select').value;
+                const powder = row.querySelector('span').textContent;
                 const price = parseFloat(row.dataset.purchasePrice);
                 const percent = parseFloat(row.dataset.profitPercent);
 
                 if (powder && !isNaN(price) && !isNaN(percent)) {
-                    hasPowder = true;
+                    hasContent = true;
                     const finalPrice = price * (1 + (percent / 100));
                     const item = document.createElement('div');
                     item.className = 'image-item-row';
@@ -814,9 +809,11 @@ if (sections.bakwash) {
                     imagePowderList.appendChild(item);
                 }
             });
-            if (!hasPowder) imagePowderList.innerHTML = '';
 
-            if (!hasCoffee && !hasPowder) {
+            if (imagePowderList.children.length <= 1) imagePowderList.innerHTML = '';
+
+
+            if (!hasContent) {
                 alert('لطفا حداقل یک مورد را برای ایجاد تصویر وارد کنید.');
                 return;
             }
@@ -837,11 +834,79 @@ if (sections.bakwash) {
             });
         }
 
-        addCoffeeRowBtn.addEventListener('click', createCoffeeRow);
-        addPowderRowBtn.addEventListener('click', createPowderRow);
-        generateImageBtn.addEventListener('click', generateImage);
+        coffeeSearchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value;
+            const lowerCaseSearchTerm = searchTerm.toLowerCase();
+            const suggestions = coffeeTypes.filter(type => type.toLowerCase().startsWith(lowerCaseSearchTerm));
+            const suggestionBox = document.getElementById('autocomplete-suggestions');
+            if (suggestionBox) {
+                suggestionBox.remove();
+            }
+            if (searchTerm.length > 0) {
+                const newSuggestionBox = document.createElement('div');
+                newSuggestionBox.id = 'autocomplete-suggestions';
+                newSuggestionBox.className = 'autocomplete-suggestions';
+                if (suggestions.length > 0) {
+                    suggestions.forEach(suggestion => {
+                        const suggestionItem = document.createElement('div');
+                        suggestionItem.textContent = suggestion;
+                        suggestionItem.addEventListener('click', () => {
+                            createCoffeeRow(suggestion);
+                            coffeeSearchInput.value = '';
+                            newSuggestionBox.remove();
+                        });
+                        newSuggestionBox.appendChild(suggestionItem);
+                    });
+                } else {
+                    const createItem = document.createElement('div');
+                    createItem.innerHTML = `ایجاد: <strong>${searchTerm}</strong>`;
+                    createItem.addEventListener('click', () => {
+                        createCoffeeRow(searchTerm);
+                        coffeeSearchInput.value = '';
+                        newSuggestionBox.remove();
+                    });
+                    newSuggestionBox.appendChild(createItem);
+                }
+                coffeeSearchInput.parentNode.appendChild(newSuggestionBox);
+            }
+        });
+        powderSearchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value;
+            const lowerCaseSearchTerm = searchTerm.toLowerCase();
+            const suggestions = powderTypes.filter(type => type.toLowerCase().startsWith(lowerCaseSearchTerm));
+            const suggestionBox = document.getElementById('autocomplete-suggestions-powder');
+            if (suggestionBox) {
+                suggestionBox.remove();
+            }
+            if (searchTerm.length > 0) {
+                const newSuggestionBox = document.createElement('div');
+                newSuggestionBox.id = 'autocomplete-suggestions-powder';
+                newSuggestionBox.className = 'autocomplete-suggestions';
+                if (suggestions.length > 0) {
+                    suggestions.forEach(suggestion => {
+                        const suggestionItem = document.createElement('div');
+                        suggestionItem.textContent = suggestion;
+                        suggestionItem.addEventListener('click', () => {
+                            createPowderRow(suggestion);
+                            powderSearchInput.value = '';
+                            newSuggestionBox.remove();
+                        });
+                        newSuggestionBox.appendChild(suggestionItem);
+                    });
+                } else {
+                    const createItem = document.createElement('div');
+                    createItem.innerHTML = `ایجاد: <strong>${searchTerm}</strong>`;
+                    createItem.addEventListener('click', () => {
+                        createPowderRow(searchTerm);
+                        powderSearchInput.value = '';
+                        newSuggestionBox.remove();
+                    });
+                    newSuggestionBox.appendChild(createItem);
+                }
+                powderSearchInput.parentNode.appendChild(newSuggestionBox);
+            }
+        });
 
-        createCoffeeRow();
-        createPowderRow();
+        generateImageBtn.addEventListener('click', generateImage);
     }
 });

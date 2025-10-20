@@ -204,17 +204,15 @@
             <div id="coffee-list-container" class="item-list-container">
                 <!-- Coffee rows will be added here by JS -->
             </div>
-            <button id="add-coffee-row-btn" class="calc-button add-row-btn">+ افزودن ردیف قهوه</button>
             <hr>
 
             <h3>لیست قیمت محصولات پودری</h3>
             <div class="input-group">
-                <input type="text" id="powder-search" placeholder="جستجوی پودر..." style="margin-bottom: 1rem;">
+                <input type="text" id="powder-search" placeholder="جستجوی محصول..." style="margin-bottom: 1rem;">
             </div>
             <div id="powder-list-container" class="item-list-container">
                 <!-- Powder rows will be added here by JS -->
             </div>
-            <button id="add-powder-row-btn" class="calc-button add-row-btn">+ افزودن ردیف پودر</button>
             <hr>
 
             <button id="generate-image-btn" class="calc-button">ایجاد عکس لیست قیمت</button>
@@ -241,7 +239,7 @@
         <div class="modal-content">
             <span class="close-button">&times;</span>
             <h3 id="modal-title">اطلاعات دانه: </h3>
-            <div class="input-group">
+            <div class="input-group" id="roast-type-group">
                 <label for="modal-roast-type">نوع رست</label>
                 <select id="modal-roast-type"></select>
             </div>
@@ -254,23 +252,6 @@
                 <input type="number" id="modal-profit-percent" placeholder="مثال: 30">
             </div>
             <button id="modal-confirm-btn" class="calc-button">تایید</button>
-        </div>
-    </div>
-
-    <!-- Modal for Powder Price -->
-    <div id="powder-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h3 id="powder-modal-title">اطلاعات محصول پودری: </h3>
-            <div class="input-group">
-                <label for="powder-modal-purchase-price">قیمت خرید (تومان/کیلوگرم)</label>
-                <input type="number" id="powder-modal-purchase-price" placeholder="مثال: 150000">
-            </div>
-            <div class="input-group">
-                <label for="powder-modal-profit-percent">درصد سود</label>
-                <input type="number" id="powder-modal-profit-percent" placeholder="مثال: 40">
-            </div>
-            <button id="powder-modal-confirm-btn" class="calc-button">تایید</button>
         </div>
     </div>
 
