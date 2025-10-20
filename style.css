@@ -604,6 +604,12 @@ select option {
     color: var(--text-light);
 }
 
+.modal-content .input-group input,
+.modal-content .input-group select {
+    font-size: 1.2rem; /* Larger font for readability */
+    padding: 0.8rem;
+}
+
 .price-list-dynamic-row {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr auto;

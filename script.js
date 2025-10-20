@@ -620,7 +620,7 @@ if (sections.bakwash) {
         let currentRowForModal = null;
 
         const coffeeTypes = [
-            "ویتنام","برزیل","چری","کلمبیا","اندونزی PB","اوگاندا",
+            "ویتنام","برزیل","چری","کلمبیا","اندونزی","PB","اوگاندا",
             "اتیوپی","کنیا","یمن","گواتمالا","هندوراس","پرو","مکزیک",
             "پاناما","کاستاریکا","اندونزی عربیکا","جاوا عربیکا","بوربون",
             "تیپیکا","اندونزی روبوستا","برزیل روبوستا","هند روبوستا",
@@ -819,55 +819,74 @@ if (sections.bakwash) {
         }
 
         coffeeSearchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const suggestions = coffeeTypes.filter(type => type.toLowerCase().startsWith(searchTerm));
-
-            // Clear previous suggestions
+            const searchTerm = e.target.value;
+            const lowerCaseSearchTerm = searchTerm.toLowerCase();
+            const suggestions = coffeeTypes.filter(type => type.toLowerCase().startsWith(lowerCaseSearchTerm));
             const suggestionBox = document.getElementById('autocomplete-suggestions');
             if (suggestionBox) {
                 suggestionBox.remove();
             }
-
-            if (searchTerm.length > 0 && suggestions.length > 0) {
+            if (searchTerm.length > 0) {
                 const newSuggestionBox = document.createElement('div');
                 newSuggestionBox.id = 'autocomplete-suggestions';
-                suggestions.forEach(suggestion => {
-                    const suggestionItem = document.createElement('div');
-                    suggestionItem.textContent = suggestion;
-                    suggestionItem.addEventListener('click', () => {
-                        createCoffeeRow(suggestion);
+                newSuggestionBox.className = 'autocomplete-suggestions';
+                if (suggestions.length > 0) {
+                    suggestions.forEach(suggestion => {
+                        const suggestionItem = document.createElement('div');
+                        suggestionItem.textContent = suggestion;
+                        suggestionItem.addEventListener('click', () => {
+                            createCoffeeRow(suggestion);
+                            coffeeSearchInput.value = '';
+                            newSuggestionBox.remove();
+                        });
+                        newSuggestionBox.appendChild(suggestionItem);
+                    });
+                } else {
+                    const createItem = document.createElement('div');
+                    createItem.innerHTML = `ایجاد: <strong>${searchTerm}</strong>`;
+                    createItem.addEventListener('click', () => {
+                        createCoffeeRow(searchTerm);
                         coffeeSearchInput.value = '';
                         newSuggestionBox.remove();
                     });
-                    newSuggestionBox.appendChild(suggestionItem);
-                });
+                    newSuggestionBox.appendChild(createItem);
+                }
                 coffeeSearchInput.parentNode.appendChild(newSuggestionBox);
             }
         });
-
         powderSearchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const suggestions = powderTypes.filter(type => type.toLowerCase().startsWith(searchTerm));
-
+            const searchTerm = e.target.value;
+            const lowerCaseSearchTerm = searchTerm.toLowerCase();
+            const suggestions = powderTypes.filter(type => type.toLowerCase().startsWith(lowerCaseSearchTerm));
             const suggestionBox = document.getElementById('autocomplete-suggestions-powder');
             if (suggestionBox) {
                 suggestionBox.remove();
             }
-
-            if (searchTerm.length > 0 && suggestions.length > 0) {
+            if (searchTerm.length > 0) {
                 const newSuggestionBox = document.createElement('div');
                 newSuggestionBox.id = 'autocomplete-suggestions-powder';
                 newSuggestionBox.className = 'autocomplete-suggestions';
-                suggestions.forEach(suggestion => {
-                    const suggestionItem = document.createElement('div');
-                    suggestionItem.textContent = suggestion;
-                    suggestionItem.addEventListener('click', () => {
-                        createPowderRow(suggestion);
+                if (suggestions.length > 0) {
+                    suggestions.forEach(suggestion => {
+                        const suggestionItem = document.createElement('div');
+                        suggestionItem.textContent = suggestion;
+                        suggestionItem.addEventListener('click', () => {
+                            createPowderRow(suggestion);
+                            powderSearchInput.value = '';
+                            newSuggestionBox.remove();
+                        });
+                        newSuggestionBox.appendChild(suggestionItem);
+                    });
+                } else {
+                    const createItem = document.createElement('div');
+                    createItem.innerHTML = `ایجاد: <strong>${searchTerm}</strong>`;
+                    createItem.addEventListener('click', () => {
+                        createPowderRow(searchTerm);
                         powderSearchInput.value = '';
                         newSuggestionBox.remove();
                     });
-                    newSuggestionBox.appendChild(suggestionItem);
-                });
+                    newSuggestionBox.appendChild(createItem);
+                }
                 powderSearchInput.parentNode.appendChild(newSuggestionBox);
             }
         });
