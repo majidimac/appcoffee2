@@ -226,11 +226,15 @@ select option {
 }
 
 .back-button {
-    background-color: rgba(200, 200, 200, 0.2); /* Neutral Gray */
-    border-color: rgba(200, 200, 200, 0.3);
+    width: auto; /* Don't be full-width */
+    padding: 0.6rem 1.5rem; /* Smaller padding */
+    font-size: 0.9rem; /* Smaller font */
+    margin-bottom: 1.5rem; /* Add space below */
+    background-color: rgba(68, 23, 121, 0.4); /* Theme color, but subtle */
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 .back-button:hover {
-    background-color: rgba(200, 200, 200, 0.35);
+    background-color: rgba(68, 23, 121, 0.6);
 }
 
 .coffee-remove-btn, .powder-remove-btn {
