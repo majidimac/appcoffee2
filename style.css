@@ -13,7 +13,7 @@
   /* Glassmorphism Styles */
   --glass-bg-light: rgba(255, 255, 255, 0.1);
   --glass-border-light: rgba(255, 255, 255, 0.2);
-  --glass-shadow-light: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  --glass-shadow-light: 0 4px 20px 0 rgba(46, 38, 135, 0.3);
   --glass-blur: 10px;
 }
 
@@ -90,7 +90,7 @@ footer {
   -webkit-backdrop-filter: blur(var(--glass-blur));
   border-radius: 15px;
   border: 1px solid var(--glass-border-light);
-  box-shadow: var(--glass-shadow-light);
+  box-shadow: var(--glass-shadow-light), inset 0 1px 1px rgba(255, 255, 255, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   text-align: center;
   padding: 1.5rem;
@@ -124,7 +124,7 @@ footer {
     -webkit-backdrop-filter: blur(var(--glass-blur));
     border-radius: 15px;
     border: 1px solid var(--glass-border-light);
-    box-shadow: var(--glass-shadow-light);
+    box-shadow: var(--glass-shadow-light), inset 0 1px 1px rgba(255, 255, 255, 0.1);
     padding: 2rem;
     max-width: 600px;
     margin: 2rem auto;
@@ -215,11 +215,33 @@ select option {
 }
 
 
-#calculate-roast-btn, .back-button {
-    background: rgba(255, 255, 255, 0.1);
+/* Specific Button Colors */
+.calc-button, #calculate-roast-btn {
+    background-color: rgba(7, 255, 81, 0.25); /* Accent Green */
+    border-color: rgba(7, 255, 81, 0.4);
 }
-#calculate-roast-btn:hover, .back-button:hover {
-    background: rgba(255, 255, 255, 0.2);
+.calc-button:hover, #calculate-roast-btn:hover {
+    background-color: rgba(7, 255, 81, 0.4);
+    box-shadow: 0 6px 16px rgba(7, 255, 81, 0.2);
+}
+
+.back-button {
+    background-color: rgba(200, 200, 200, 0.2); /* Neutral Gray */
+    border-color: rgba(200, 200, 200, 0.3);
+}
+.back-button:hover {
+    background-color: rgba(200, 200, 200, 0.35);
+}
+
+.coffee-remove-btn, .powder-remove-btn {
+    background-color: rgba(220, 53, 69, 0.4) !important; /* Danger Red */
+    border: 1px solid rgba(220, 53, 69, 0.6) !important;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+}
+.coffee-remove-btn:hover, .powder-remove-btn:hover {
+    background-color: rgba(220, 53, 69, 0.6) !important;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
 }
 
 /* ####################################
@@ -631,11 +653,11 @@ html[data-theme="dark"] {
 
     --glass-bg-light: rgba(0, 0, 0, 0.2);
     --glass-border-light: rgba(255, 255, 255, 0.1);
-    --glass-shadow-light: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    --glass-shadow-light: 0 4px 20px 0 rgba(0, 0, 0, 0.3);
 }
 
 html[data-theme="dark"] body {
-    background: linear-gradient(135deg, #232526 0%, #414345 100%);
+    background: linear-gradient(135deg, #383a3d 0%, #5a5c5e 100%); /* Lighter gradient */
 }
 html[data-theme="dark"] #theme-toggler {
     stroke: white;
