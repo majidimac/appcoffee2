@@ -562,7 +562,7 @@ select option {
     background: var(--glass-bg-light);
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
-    margin: auto;
+    margin: 10vh auto;
     padding: 2rem;
     border: 1px solid var(--glass-border-light);
     border-radius: 15px;
