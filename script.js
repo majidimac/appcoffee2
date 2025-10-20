@@ -644,12 +644,22 @@ if (sections.bakwash) {
          * @param {HTMLElement} rowElement - The row element that triggered the modal.
          * @param {string} coffeeType - The type of coffee selected.
          */
-        function showModal(rowElement, coffeeType) {
+        function showModal(rowElement, coffeeType, productType = 'coffee') {
             currentRowForModal = rowElement;
-            modalTitle.textContent = `اطلاعات دانه: ${coffeeType}`;
-            modalRoastTypeSelect.selectedIndex = 0;
+            currentRowForModal.dataset.productType = productType; // Store the type
+            modalTitle.textContent = `اطلاعات: ${coffeeType}`;
             modalPurchasePriceInput.value = '';
             modalProfitPercentInput.value = '';
+
+            // Show or hide the roast type selector based on the product type
+            const roastTypeGroup = document.getElementById('roast-type-group');
+            if (productType === 'powder') {
+                roastTypeGroup.style.display = 'none';
+            } else {
+                roastTypeGroup.style.display = 'block';
+                modalRoastTypeSelect.selectedIndex = 0;
+            }
+
             roastModal.style.display = 'block';
         }
 
@@ -669,22 +679,28 @@ if (sections.bakwash) {
 
             const purchasePrice = parseFloat(modalPurchasePriceInput.value);
             const profitPercent = parseFloat(modalProfitPercentInput.value);
-            const roastType = modalRoastTypeSelect.value;
 
             if (isNaN(purchasePrice) || isNaN(profitPercent) || purchasePrice <= 0 || profitPercent < 0) {
                 alert('لطفاً قیمت خرید و درصد سود را به درستی وارد کنید.');
                 return;
             }
 
-            // We store the raw values in data attributes for later calculation
+            // Store raw values in data attributes
             currentRowForModal.dataset.purchasePrice = purchasePrice;
             currentRowForModal.dataset.profitPercent = profitPercent;
-            currentRowForModal.dataset.roastType = roastType;
 
-            // Update the display in the row
             const finalPrice = purchasePrice * (1 + (profitPercent / 100));
             currentRowForModal.querySelector('.price-display').textContent = `${formatCurrency(finalPrice)} تومان`;
-            currentRowForModal.querySelector('.roast-display').textContent = `(${roastType})`;
+
+            // Only handle roast type for coffee products
+            if (currentRowForModal.dataset.productType === 'coffee') {
+                const roastType = modalRoastTypeSelect.value;
+                currentRowForModal.dataset.roastType = roastType;
+                const roastDisplay = currentRowForModal.querySelector('.roast-display');
+                if (roastDisplay) {
+                    roastDisplay.textContent = `(${roastType})`;
+                }
+            }
 
             hideModal();
         }
@@ -739,7 +755,7 @@ if (sections.bakwash) {
             row.append(powderName, priceDisplay, removeBtn);
             powderListContainer.appendChild(row);
 
-            showModal(row, powderType);
+            showModal(row, powderType, 'powder');
         }
 
 
