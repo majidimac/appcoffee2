@@ -603,69 +603,8 @@ if (sections.bakwash) {
     // ####################################
     if (sections.priceList) {
         const coffeeListContainer = sections.priceList.querySelector('#coffee-list-container');
-        const powderListContainer = sections.priceList.querySelector('#powder-list-container');
-        const addCoffeeRowBtn = sections.priceList.querySelector('#add-coffee-row-btn');
-        const addPowderRowBtn = sections.priceList.querySelector('#add-powder-row-btn');
         const generateImageBtn = sections.priceList.querySelector('#generate-image-btn');
         const coffeeSearchInput = sections.priceList.querySelector('#coffee-search');
-        const powderSearchInput = sections.priceList.querySelector('#powder-search');
-
-        /**
-         * Updates the options in a dropdown based on a search term.
-         * @param {HTMLSelectElement} selectElement - The select element to update.
-         * @param {string[]} allOptions - An array of all possible options.
-         * @param {string} searchTerm - The search term to filter by.
-         */
-        function updateDropdownWithOptions(selectElement, allOptions, searchTerm) {
-            const currentSelection = selectElement.value;
-            const placeholderText = selectElement.querySelector('option[disabled]')?.textContent || 'انتخاب کنید';
-
-            // Clear the select element and re-add the placeholder
-            selectElement.innerHTML = '';
-            const placeholderOption = document.createElement('option');
-            placeholderOption.value = "";
-            placeholderOption.textContent = placeholderText;
-            placeholderOption.disabled = true;
-            selectElement.appendChild(placeholderOption);
-
-            // Filter and add the new options
-            const filteredOptions = allOptions.filter(optionText =>
-                optionText.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-
-            filteredOptions.forEach(optionText => {
-                const option = document.createElement('option');
-                option.value = optionText;
-                option.textContent = optionText;
-                selectElement.appendChild(option);
-            });
-
-            // Restore selection if it's still in the filtered list, otherwise default to placeholder
-            if (filteredOptions.includes(currentSelection)) {
-                selectElement.value = currentSelection;
-            } else {
-                selectElement.selectedIndex = 0;
-            }
-        }
-
-        coffeeSearchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value;
-            const rows = coffeeListContainer.querySelectorAll('.price-list-dynamic-row');
-            rows.forEach(row => {
-                const select = row.querySelector('select');
-                updateDropdownWithOptions(select, coffeeTypes, searchTerm);
-            });
-        });
-
-        powderSearchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value;
-            const rows = powderListContainer.querySelectorAll('.price-list-dynamic-row');
-            rows.forEach(row => {
-                const select = row.querySelector('select');
-                updateDropdownWithOptions(select, powderTypes, searchTerm);
-            });
-        });
-
 
         // Modal Elements
         const roastModal = document.getElementById('roast-modal');
@@ -675,13 +614,6 @@ if (sections.bakwash) {
         const modalProfitPercentInput = document.getElementById('modal-profit-percent');
         const modalConfirmBtn = document.getElementById('modal-confirm-btn');
         const closeModalBtn = roastModal.querySelector('.close-button');
-
-        const powderModal = document.getElementById('powder-modal');
-        const powderModalTitle = document.getElementById('powder-modal-title');
-        const powderModalPurchasePriceInput = document.getElementById('powder-modal-purchase-price');
-        const powderModalProfitPercentInput = document.getElementById('powder-modal-profit-percent');
-        const powderModalConfirmBtn = document.getElementById('powder-modal-confirm-btn');
-        const closePowderModalBtn = powderModal.querySelector('.close-button');
 
         let currentRowForModal = null;
 
@@ -693,7 +625,6 @@ if (sections.bakwash) {
             " 70/30 میکس عربیکا","50/50 میکس","100 عربیکا ","100 ربوستا ","70/30 میکس ربوستا"
         ];
         const roastTypes = ["مدیوم", "شکلاتی", "دارک"];
-        const powderTypes = ["ماسالا", "کافی میت", "کافی میکس", "کاپوچینو", "هات چاکلت", "وایت چاکلت", "پینک چاکلت", "چای کرکی", "گلد هند", "گلد برزیل", "گلد اکوادور"];
 
         // Populate modal roast types
         roastTypes.forEach(type => {
@@ -702,31 +633,6 @@ if (sections.bakwash) {
             option.textContent = type;
             modalRoastTypeSelect.appendChild(option);
         });
-
-        /**
-         * Creates a dropdown element with the given options.
-         * @param {string[]} options - An array of strings for the options.
-         * @param {string} placeholder - The placeholder text for the dropdown.
-         * @returns {HTMLSelectElement} The created select element.
-         */
-        function createDropdown(options, placeholder) {
-            const select = document.createElement('select');
-            if (placeholder) {
-                const placeholderOption = document.createElement('option');
-                placeholderOption.value = "";
-                placeholderOption.textContent = placeholder;
-                placeholderOption.disabled = true;
-                placeholderOption.selected = true;
-                select.appendChild(placeholderOption);
-            }
-            options.forEach(optionText => {
-                const option = document.createElement('option');
-                option.value = optionText;
-                option.textContent = optionText;
-                select.appendChild(option);
-            });
-            return select;
-        }
 
         /**
          * Shows the modal for entering coffee details.
@@ -782,69 +688,17 @@ if (sections.bakwash) {
         closeModalBtn.addEventListener('click', hideModal);
         window.addEventListener('click', (event) => {
             if (event.target === roastModal) hideModal();
-            if (event.target === powderModal) hidePowderModal();
         });
-
-        /**
-         * Shows the modal for entering powder details.
-         * @param {HTMLElement} rowElement - The row element that triggered the modal.
-         * @param {string} powderType - The type of powder selected.
-         */
-        function showPowderModal(rowElement, powderType) {
-            currentRowForModal = rowElement;
-            powderModalTitle.textContent = `اطلاعات محصول: ${powderType}`;
-            powderModalPurchasePriceInput.value = '';
-            powderModalProfitPercentInput.value = '';
-            powderModal.style.display = 'block';
-        }
-
-        /**
-         * Hides the powder details modal.
-         */
-        function hidePowderModal() {
-            powderModal.style.display = 'none';
-            currentRowForModal = null;
-        }
-
-        /**
-         * Handles the confirmation of the powder details modal.
-         */
-        function handlePowderModalConfirm() {
-            if (!currentRowForModal) return;
-
-            const purchasePrice = parseFloat(powderModalPurchasePriceInput.value);
-            const profitPercent = parseFloat(powderModalProfitPercentInput.value);
-
-            if (isNaN(purchasePrice) || isNaN(profitPercent) || purchasePrice <= 0 || profitPercent < 0) {
-                alert('لطفاً قیمت خرید و درصد سود را به درستی وارد کنید.');
-                return;
-            }
-
-            currentRowForModal.dataset.purchasePrice = purchasePrice;
-            currentRowForModal.dataset.profitPercent = profitPercent;
-
-            const finalPrice = purchasePrice * (1 + (profitPercent / 100));
-            currentRowForModal.querySelector('.price-display').textContent = `${formatCurrency(finalPrice)} تومان`;
-
-            hidePowderModal();
-        }
-
-        powderModalConfirmBtn.addEventListener('click', handlePowderModalConfirm);
-        closePowderModalBtn.addEventListener('click', hidePowderModal);
 
         /**
          * Creates a new coffee row in the price list.
          */
-        function createCoffeeRow() {
+        function createCoffeeRow(coffeeType) {
             const row = document.createElement('div');
             row.className = 'price-list-dynamic-row';
 
-            const coffeeTypeSelect = createDropdown(coffeeTypes, 'نوع دانه را انتخاب کنید');
-            coffeeTypeSelect.addEventListener('change', () => {
-                if(coffeeTypeSelect.value) {
-                    showModal(row, coffeeTypeSelect.value);
-                }
-            });
+            const coffeeName = document.createElement('span');
+            coffeeName.textContent = coffeeType;
 
             const priceDisplay = document.createElement('span');
             priceDisplay.className = 'price-display';
@@ -857,34 +711,10 @@ if (sections.bakwash) {
             removeBtn.className = 'calc-button remove-row-btn';
             removeBtn.onclick = () => row.remove();
 
-            row.append(coffeeTypeSelect, priceDisplay, roastDisplay, removeBtn);
+            row.append(coffeeName, priceDisplay, roastDisplay, removeBtn);
             coffeeListContainer.appendChild(row);
-        }
 
-        /**
-         * Creates a new powder row in the price list.
-         */
-        function createPowderRow() {
-            const row = document.createElement('div');
-            row.className = 'price-list-dynamic-row';
-
-            const powderTypeSelect = createDropdown(powderTypes, 'نوع پودر را انتخاب کنید');
-            powderTypeSelect.addEventListener('change', () => {
-                if(powderTypeSelect.value) {
-                    showPowderModal(row, powderTypeSelect.value);
-                }
-            });
-
-            const priceDisplay = document.createElement('span');
-            priceDisplay.className = 'price-display';
-
-            const removeBtn = document.createElement('button');
-            removeBtn.textContent = 'حذف';
-            removeBtn.className = 'calc-button remove-row-btn';
-            removeBtn.onclick = () => row.remove();
-
-            row.append(powderTypeSelect, priceDisplay, removeBtn);
-            powderListContainer.appendChild(row);
+            showModal(row, coffeeType);
         }
 
         /**
@@ -902,11 +732,11 @@ if (sections.bakwash) {
             const imagePowderList = imageTemplate.querySelector('#image-powder-list');
 
             imageCoffeeList.innerHTML = '<h3>دانه‌های قهوه</h3>';
-            imagePowderList.innerHTML = '<h3>محصولات پودری</h3>';
+            imagePowderList.innerHTML = ''; // Remove powder section
 
             let hasCoffee = false;
             coffeeListContainer.querySelectorAll('.price-list-dynamic-row').forEach(row => {
-                const coffee = row.querySelector('select').value;
+                const coffee = row.querySelector('span').textContent;
                 const roast = row.dataset.roastType;
                 const price = parseFloat(row.dataset.purchasePrice);
                 const percent = parseFloat(row.dataset.profitPercent);
@@ -922,24 +752,7 @@ if (sections.bakwash) {
             });
             if (!hasCoffee) imageCoffeeList.innerHTML = '';
 
-            let hasPowder = false;
-            powderListContainer.querySelectorAll('.price-list-dynamic-row').forEach(row => {
-                const powder = row.querySelector('select').value;
-                const price = parseFloat(row.dataset.purchasePrice);
-                const percent = parseFloat(row.dataset.profitPercent);
-
-                if (powder && !isNaN(price) && !isNaN(percent)) {
-                    hasPowder = true;
-                    const finalPrice = price * (1 + (percent / 100));
-                    const item = document.createElement('div');
-                    item.className = 'image-item-row';
-                    item.innerHTML = `<span class="item-name">${powder}</span><span class="item-price">${formatCurrency(finalPrice)} تومان</span>`;
-                    imagePowderList.appendChild(item);
-                }
-            });
-            if (!hasPowder) imagePowderList.innerHTML = '';
-
-            if (!hasCoffee && !hasPowder) {
+            if (!hasCoffee) {
                 alert('لطفا حداقل یک مورد را برای ایجاد تصویر وارد کنید.');
                 return;
             }
@@ -960,11 +773,33 @@ if (sections.bakwash) {
             });
         }
 
-        addCoffeeRowBtn.addEventListener('click', createCoffeeRow);
-        addPowderRowBtn.addEventListener('click', createPowderRow);
-        generateImageBtn.addEventListener('click', generateImage);
+        coffeeSearchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const suggestions = coffeeTypes.filter(type => type.toLowerCase().startsWith(searchTerm));
 
-        createCoffeeRow();
-        createPowderRow();
+            // Clear previous suggestions
+            const suggestionBox = document.getElementById('autocomplete-suggestions');
+            if (suggestionBox) {
+                suggestionBox.remove();
+            }
+
+            if (searchTerm.length > 0 && suggestions.length > 0) {
+                const newSuggestionBox = document.createElement('div');
+                newSuggestionBox.id = 'autocomplete-suggestions';
+                suggestions.forEach(suggestion => {
+                    const suggestionItem = document.createElement('div');
+                    suggestionItem.textContent = suggestion;
+                    suggestionItem.addEventListener('click', () => {
+                        createCoffeeRow(suggestion);
+                        coffeeSearchInput.value = '';
+                        newSuggestionBox.remove();
+                    });
+                    newSuggestionBox.appendChild(suggestionItem);
+                });
+                coffeeSearchInput.parentNode.appendChild(newSuggestionBox);
+            }
+        });
+
+        generateImageBtn.addEventListener('click', generateImage);
     }
 });
