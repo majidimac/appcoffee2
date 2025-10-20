@@ -78,6 +78,25 @@
             <div class="result" id="results">
                 <p>نتایج پس از محاسبه نمایش داده خواهند شد.</p>
             </div>
+            <button id="generate-roast-image-btn" class="calc-button" style="display: none; margin-top: 1rem;">چاپ عکس گزارش</button>
+
+            <!-- Hidden template for roast report image -->
+            <div id="roast-image-output-template" style="display: none;">
+                <div class="image-header">
+                    <h1>گزارش روزانه رُست</h1>
+                    <p id="roast-report-date"></p>
+                </div>
+                <div class="image-content">
+                    <h3>خلاصه ورودی‌ها</h3>
+                    <div id="roast-inputs-summary"></div>
+                    <hr>
+                    <h3>خلاصه خروجی‌ها</h3>
+                    <div id="roast-outputs-summary"></div>
+                </div>
+                <div class="image-footer">
+                    <p>تهیه شده با ابزار قهوه مجید</p>
+                </div>
+            </div>
         </div>
     </div>
 

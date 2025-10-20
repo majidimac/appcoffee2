@@ -261,6 +261,7 @@ if (sections.bakwash) {
         const batchInputElement = document.getElementById('batchInput');
         const batchOutputElement = document.getElementById('batchOutput');
         const resultsDiv = document.getElementById('results');
+        const generateBtn = document.getElementById('generate-roast-image-btn');
 
         batchInputElement.classList.remove('invalid-input');
         batchOutputElement.classList.remove('invalid-input');
@@ -273,24 +274,75 @@ if (sections.bakwash) {
 
         if (!isValid) {
             resultsDiv.innerHTML = '<p style="color: red;">!لطفاً فیلدهای مشخص‌شده را با مقادیر معتبر پر کنید</p>';
+            generateBtn.style.display = 'none';
             return;
         }
 
         const greenPrice = getInputValue('greenPrice');
         const roastWage = getInputValue('roastWage');
         const totalGreen = getInputValue('totalGreen');
+
+        const costPerKGGreen = greenPrice + roastWage;
+        const totalGreenBeanCost = costPerKGGreen * totalGreen;
         const weightLossPercent = ((batchInput - batchOutput) / batchInput) * 100;
         const totalRoastedOutput = totalGreen * (1 - (weightLossPercent / 100));
         let costOfRoastedCoffee = 0;
         if (totalRoastedOutput > 0) {
-            const costPerKGGreen = greenPrice + roastWage;
-            const overallTotalCost = costPerKGGreen * totalGreen;
-            costOfRoastedCoffee = overallTotalCost / totalRoastedOutput;
+            costOfRoastedCoffee = totalGreenBeanCost / totalRoastedOutput;
         }
-        resultsDiv.innerHTML = `<p><strong>درصد افت وزن:</strong> ${weightLossPercent.toFixed(2)} %</p><p><strong>قیمت تمام شده رُست شده:</strong> ${formatCurrency(costOfRoastedCoffee)} تومان/کیلوگرم</p><p><strong>مقدار قهوه خروجی در بچ:</strong> ${batchOutput.toFixed(2)} گرم</p><p><strong>کل قهوه رُست شده امروز:</strong> ${totalRoastedOutput.toFixed(2)} کیلوگرم</p>`;
+        const totalRoastedValue = totalRoastedOutput * costOfRoastedCoffee;
+        const profit = totalRoastedValue - totalGreenBeanCost;
+
+
+        resultsDiv.innerHTML = `
+            <p><strong>درصد افت وزن:</strong> ${weightLossPercent.toFixed(2)} %</p>
+            <p><strong>قیمت تمام شده رُست شده:</strong> ${formatCurrency(costOfRoastedCoffee)} تومان/کیلوگرم</p>
+            <p><strong>مقدار قهوه خروجی در بچ:</strong> ${batchOutput.toFixed(2)} گرم</p>
+            <p><strong>کل قهوه رُست شده امروز:</strong> ${totalRoastedOutput.toFixed(2)} کیلوگرم</p>
+            <hr>
+            <p><strong>قیمت کل دانه سبز:</strong> ${formatCurrency(totalGreenBeanCost)} تومان</p>
+            <p><strong>ارزش کل قهوه رُست شده:</strong> ${formatCurrency(totalRoastedValue)} تومان</p>
+            <p style="color: var(--primary-color);"><strong>سود نهایی: ${formatCurrency(profit)} تومان</strong></p>
+        `;
+        generateBtn.style.display = 'block';
     }
     if (buttons.calculateRoast) buttons.calculateRoast.addEventListener('click', calculateRoast);
 
+    const generateRoastImageBtn = document.getElementById('generate-roast-image-btn');
+    if (generateRoastImageBtn) {
+        generateRoastImageBtn.addEventListener('click', () => {
+            const template = document.getElementById('roast-image-output-template');
+            document.getElementById('roast-report-date').textContent = new Date().toLocaleDateString('fa-IR');
+
+            const inputs = {
+                "قیمت دانه سبز": formatCurrency(getInputValue('greenPrice')) + ' تومان/کیلوگرم',
+                "اجرت رُست": formatCurrency(getInputValue('roastWage')) + ' تومان/کیلوگرم',
+                "مقدار دانه سبز ورودی": getInputValue('batchInput') + ' گرم',
+                "مقدار دانه خروجی": getInputValue('batchOutput') + ' گرم',
+                "کل دانه سبز روز": getInputValue('totalGreen') + ' کیلوگرم',
+            };
+
+            const inputsSummary = document.getElementById('roast-inputs-summary');
+            inputsSummary.innerHTML = '';
+            for (const [key, value] of Object.entries(inputs)) {
+                const p = document.createElement('p');
+                p.innerHTML = `<strong>${key}:</strong> ${value}`;
+                inputsSummary.appendChild(p);
+            }
+
+            const resultsText = document.getElementById('results').innerHTML;
+            document.getElementById('roast-outputs-summary').innerHTML = resultsText;
+
+            template.style.display = 'block';
+            html2canvas(template, { scale: 2 }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'roast-report.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                template.style.display = 'none';
+            });
+        });
+    }
     // ####################################
     // Cafe Revenue Logic
     // ####################################
