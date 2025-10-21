@@ -476,14 +476,24 @@ select option {
 
 
 /* Styles for the hidden image output template */
-#image-output-template {
+#image-output-template, #roast-image-output-template {
     width: 800px;
     padding: 2rem;
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     font-family: 'Vazir', sans-serif;
-    color: #333;
+    color: #333; /* Default dark text color */
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     border-radius: 15px;
+}
+
+#roast-image-output-template h1,
+#roast-image-output-template h3,
+#roast-image-output-template p,
+#roast-image-output-template strong {
+    color: #333; /* Ensure all text is dark */
+}
+#roast-image-output-template p strong {
+    color: #0056b3; /* Make emphasized text a different color, like blue */
 }
 #image-output-template .image-header {
     text-align: center;
